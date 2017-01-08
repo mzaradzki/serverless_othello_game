@@ -1,0 +1,65 @@
+body{
+	width:256px;
+	font-family: "Lucida Bright", Georgia, serif;
+}
+#template{
+	display:none;
+}
+#wrap{
+	position:absolute;
+	width:256px;
+	left:50%;
+	margin-left:-128px;
+	text-align:center;
+}
+.cell{
+	position:absolute;
+	width:31px;
+	height:31px;
+	border:1px solid #000;
+	background-color:#0e0;
+}
+#board{
+	position:absolute;
+}
+#message{
+	position:relative;
+	top: 268px;
+}
+#reset{
+	position:relative;
+	top: 258px;
+}
+#empty{}
+#white div{
+	position:absolute;
+	top:1px;
+	left:1px;
+	width:29px;
+	height:29px;
+	background-color:#fff;
+	border-radius:15px;
+}
+#black div{
+	position:absolute;
+	top:1px;
+	left:1px;
+	width:29px;
+	height:29px;
+	background-color:#000;
+	border-radius:15px;
+}
+
+footer{
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  font-size: 12px;
+  color: #666666;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+footer .thanks{
+  display: inline-block;
+  text-align: left;
+}
