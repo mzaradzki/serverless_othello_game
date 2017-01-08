@@ -43,14 +43,15 @@
             
             // Prepare to call Lambda function
             var lambda = new AWS.Lambda({region: 'eu-west-1', apiVersion: '2015-03-31'});
-            var pullParams = {
-                FunctionName : 'slotPull',
-                InvocationType : 'RequestResponse',
-                Payload: '{ "name" : "Math" }',
-                LogType : 'None'
-            }
+            
             
             function initiatePull() {
+                var pullParams = {
+                    FunctionName : 'slotPull',
+                    InvocationType : 'RequestResponse',
+                    Payload: '{ "name" : "Math" }',
+                    LogType : 'None'
+                }
                 // Call the Lambda function to collect the spin results
                 lambda.invoke(pullParams, function(err, data) {
                     if (err) {
@@ -92,31 +93,31 @@
                     }
                 }
             }
-
-            // This function should be in Lambda, not in the browser
-            // example : updateItem('11', 1);
-            function updateItem(game_id, start_stamp) {
-                var params = {
-                    TableName: 'Othello',
-                    Key: {
-                        'game_id': game_id,
-                        'start_stamp': start_stamp
-                    },
-                    UpdateExpression: "set turn = :t, board = :b",
-                    ExpressionAttributeValues: {
-                        ":t": 'W',
-                        ":b": ['00000000', '00000000', '00000000', '00000000', '00000000', '00000000', '00000000', '00000000'],
-                    },
-                    ReturnValues:"UPDATED_NEW"
+            
+            function boardUpdate(game_id, start_stamp, player, row, column) {
+                var Payload = {
+                    'game_id': game_id,
+                    'start_stamp': start_stamp,
+                    'player': player,
+                    'row': row,
+                    'column': column
                 };
-
-                docClient.update(params, function(err, data) {
+                console.log(JSON.stringify(Payload));
+                var lambdaParams = {
+                    FunctionName : 'boardUpdate',
+                    InvocationType : 'RequestResponse',
+                    Payload: JSON.stringify(Payload),
+                    LogType : 'None'
+                };
+                // Call the Lambda function to collect the spin results
+                lambda.invoke(lambdaParams, function(err, data) {
                     if (err) {
-                        console.log("Unable to update item: " + "\n" + JSON.stringify(err, undefined, 2));
+                        prompt(err);
                     } else {
-                        console.log("UpdateItem succeeded: " + "\n" + JSON.stringify(data, undefined, 2));
+                        pullResults = JSON.parse(data.Payload);
+                        console.log(pullResults);
                     }
-                });
+                }); 
             }
 
         </script>

@@ -9,21 +9,15 @@ exports.handler = (event, context, callback) => {
     console.log(event.player);
     console.log(event.row);
     console.log(event.column);
-    //var docClient = dynamodb.DocumentClient();
+    
     var docClient = new AWS.DynamoDB.DocumentClient();
     // This function should be in Lambda, not in the browser
-    // example : updateItem('11', 1);
     function setCharAt(str,index,chr) {
         if(index > str.length-1) return str;
         return str.substr(0,index) + chr + str.substr(index+1);
     }
-    var newboard = ['00000000', '00000000', '00000000', '00000000', '00000000', '00000000', '00000000', '00000000'];
-    var newrow = newboard[event.row];
-    newboard[event.row] = setCharAt(newboard[event.row], event.column, event.player);
-    //newrow[event.column] = event.player;
-    //newboard[event.row] = newrow;
     
-    function updateItem(game_id, start_stamp) {
+    function updateItem(game_id, start_stamp, new_board) {
         var params = {
             TableName: 'Othello',
             Key: {
@@ -33,7 +27,7 @@ exports.handler = (event, context, callback) => {
             UpdateExpression: "set turn = :t, board = :b",
             ExpressionAttributeValues: {
                 ":t": 'W',
-                ":b": newboard,
+                ":b": new_board,
             },
             ReturnValues:"UPDATED_NEW"
         };
@@ -46,6 +40,26 @@ exports.handler = (event, context, callback) => {
             }
         });
     }
-    updateItem(event.game_id, event.start_stamp)
-    callback(null, 'Hello from Lambda');
+    //updateItem(event.game_id, event.start_stamp);
+    // example : readItem('11', 1);
+    var params = {
+        TableName: 'Othello',
+        Key: {
+            'game_id': event.game_id,
+            'start_stamp': event.start_stamp
+        }
+    };
+    docClient.get(params, function(err, data) {
+        if (err) {
+            console.log("Unable to read item: " + "\n" + JSON.stringify(err, undefined, 2));
+        } else {
+            console.log("GetItem succeeded: " + "\n" + JSON.stringify(data, undefined, 2));
+            //console.log(data.Item.board);
+            var newboard = data.Item.board;
+            newboard[event.row-1] = setCharAt(newboard[event.row-1], event.column-1, event.player);
+            //console.log(newboard);
+            updateItem(event.game_id, event.start_stamp, newboard);
+        }
+    });
+    callback(null, 'Done!');
 };
