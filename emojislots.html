@@ -11,12 +11,15 @@
             AWS.config.update({region: 'eu-west-1'});
             AWS.config.credentials = new AWS.CognitoIdentityCredentials({IdentityPoolId: 'eu-west-1:8fd4aff6-c2e8-42f8-858c-21080b3a9a4b'});
 
-            var dynamodb = new AWS.DynamoDB();          
+            //var dynamodb = new AWS.DynamoDB();          
 
             var game = null;
 
+            var GAME_ID = null;
+            var START_STAMP = null;
+
             /* Makes a scan of the DynamoDB table to set a data object for the chart */
-            function getData() {
+            /*function getData() {
                 var params = { TableName: 'Othello' };
                 dynamodb.scan(params, function(err, data) {
                     if (err) {
@@ -33,7 +36,7 @@
                         game['start_stamp'] = aux.start_stamp.N;
                     }
                 });
-            }
+            }*/
             // to update a record :
             // http://docs.aws.amazon.com/amazondynamodb/latest/gettingstartedguide/GettingStarted.Js.03.html#GettingStarted.Js.03.01
 
@@ -55,17 +58,21 @@
                 // Call the Lambda function to collect the spin results
                 lambda.invoke(lambdaParams, function(err, data) {
                     if (err) {
-                        prompt(err);
+                        console.log(err);
+                        GAME_ID = null;
+                        START_STAMP = null;
                     } else {
                         var pullResults = JSON.parse(data.Payload);
                         console.log(pullResults.game_id);
                         console.log(pullResults.start_stamp);
+                        GAME_ID = pullResults.game_id;
+                        START_STAMP = pullResults.start_stamp;
+                        readItem();
                     }
                 });
             }
             
-            
-            function initiatePull() {
+            /*function initiatePull() {
                 var pullParams = {
                     FunctionName : 'slotPull',
                     InvocationType : 'RequestResponse',
@@ -81,17 +88,16 @@
                         console.log(pullResults);
                     }
                 }); 
-            }
+            }*/
 
             var docClient = new AWS.DynamoDB.DocumentClient();
 
-            // example : readItem('11', 1);
-            function readItem(game_id, start_stamp) {
+            function readItem() {
                 var params = {
                     TableName: 'Othello',
                     Key: {
-                        'game_id': game_id,
-                        'start_stamp': start_stamp
+                        'game_id': GAME_ID,
+                        'start_stamp': START_STAMP
                     }
                 };
                 docClient.get(params, function(err, data) {
@@ -173,7 +179,7 @@
                 if (flip) {
                     console.log(x);
                     console.log(y);
-                    boardUpdate('11', 1, turn, x, y);
+                    boardUpdate(GAME_ID, START_STAMP, turn, x, y);
                 }
                 return ret;
             }
@@ -232,7 +238,8 @@
             }
             
             // see this example : https://codepen.io/k44/pen/zKiIo
-            var showBoard = function(){
+            // purely UI function
+            var showBoard = function() {
                 var b = document.getElementById('board');
                 while (b.firstChild){
                     b.removeChild(b.firstChild);
@@ -259,14 +266,15 @@
                 }
             }
             
-            var init = function() {
-                turn = 'W';//2;
+            var initPiece = function() {
                 piece = {
-                    '0': document.getElementById('empty'),
+                    '0': document.getElementById('empty'), // DOM need to exist for this
                     'B': document.getElementById('black'),
                     'W': document.getElementById('white')
                 };
-                
+            }
+
+            var initGame = function() {
                 // Should call a Lambda function to create a new DB entry
                 for (var i = 0; i < 10; i++){
                     board[i] = [];
@@ -274,21 +282,24 @@
                         board[i][j] = '0';
                     }
                 }
-                
-                board[4][5] = 'B'; //1;
+                /*board[4][5] = 'B'; //1;
                 board[5][4] = 'B'; //1;
                 board[4][4] = 'W'; //2
-                board[5][5] = 'W'; //2;
-                turnChange();
-                showBoard();
+                board[5][5] = 'W'; //2;*/
+                gameCreate();
+
+                turn = 'W';//2;
+                //turnChange();
+                //showBoard();
             }
             
             var board = [];
             
             window.onload = function() {
-                init();
+                initPiece();
+                initGame()
                 document.getElementById('reset').onclick = function(){
-                    init();
+                    initGame();
                 }
             }
 
