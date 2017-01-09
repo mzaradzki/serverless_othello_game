@@ -113,7 +113,7 @@
                         pullResults = JSON.parse(data.Payload);
                         console.log(pullResults);
                     }
-                }); 
+                });
             }
 
             var piece = [];
@@ -136,7 +136,7 @@
                         }
                         if (n > 0 && board[nx][ny] == turn) {
                             ret += n;
-                            if (flip) {
+                            if (flip) { // This logic should be part of the Lambda too
                                 nx = x + dx;
                                 ny = y + dy;
                                 while (board[nx][ny] == ((turn == 'W') ? 'B' : 'W')) {
@@ -148,6 +148,12 @@
                             }
                         }
                     }
+                }
+                // Lambda
+                if (flip) {
+                    console.log(x);
+                    console.log(y);
+                    boardUpdate('11', 1, turn, x, y);
                 }
                 return ret;
             }
@@ -281,6 +287,6 @@
             <p id="message"></p>
             <input type="button" id="reset" value="reset">
         </div>
-        
+
     </body>
 </html>
