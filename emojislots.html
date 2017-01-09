@@ -11,6 +11,22 @@
             AWS.config.update({region: 'eu-west-1'});
             AWS.config.credentials = new AWS.CognitoIdentityCredentials({IdentityPoolId: 'eu-west-1:8fd4aff6-c2e8-42f8-858c-21080b3a9a4b'});
 
+            // Make the call to obtain credentials
+            var identityId = null;
+            // see documentation at : http://docs.aws.amazon.com/cognito/latest/developerguide/google.html
+            AWS.config.credentials.get(function(){
+
+                // Credentials will be available when this function is called.
+                var accessKeyId = AWS.config.credentials.accessKeyId;
+                var secretAccessKey = AWS.config.credentials.secretAccessKey;
+                var sessionToken = AWS.config.credentials.sessionToken;
+
+                identityId = AWS.config.credentials.identityId;
+                console.log(identityId);
+            });
+
+
+
             var game = null;
 
             var GAME_ID = null;
@@ -72,6 +88,7 @@
                                 board[i][j] = data.Item.board[i][j];
                             }
                         }
+                        turn = data.Item.turn;
                         showBoard();
                     }
                 });
@@ -137,7 +154,7 @@
                     }
                 }
                 // Lambda
-                if (flip) {
+                if ((ret>0) && (flip)) {
                     console.log(x);
                     console.log(y);
                     boardUpdate(GAME_ID, START_STAMP, turn, x, y);
@@ -147,16 +164,11 @@
             
             // see this example : https://codepen.io/k44/pen/zKiIo
             var turnChange = function() {
-                var b = 0;
-                var w = 0;
                 // step 1 : flip turn and check that new player has available options
-                //turn = 3 - turn;
                 turn = ((turn == 'W') ? 'B' : 'W');
-                var message = ((turn == 'B') ? 'black' : 'white'); //((turn ==1)?"black":"white");
                 for (var x = 1; x <= 8; x++) {
                     for (var y = 1; y <= 8; y++) {
                         if (board[x][y] == '0' && checkPiece(x, y, false)) {
-                            document.getElementById('message').innerHTML = message + "'s move";
                             showBoard();
                             return; // returns with the flipped player
                         }
@@ -164,38 +176,18 @@
                 }
                 // conditional step 2 : IF the flipped player was blocked then revert and check if player has available moves
                 turn = ((turn == 'W') ? 'B' : 'W');
-                message += " pass</br>" + ((turn == 'B' )? 'black' : 'white') + "'s move";
-                        
                 for (var x = 1; x <= 8; x++) {
                     for (var y = 1; y <= 8; y++) {
                         if (board[x][y] == '0' && checkPiece(x, y, false)) {
-                            document.getElementById('message').innerHTML = message;
                             showBoard();
                             return; // return with the previous player
                         }
                     }
                 }
-
                 // conditional step 3 : both players are blocked, so end the game
-                for (var x = 1; x <= 8; x++) {
-                    for (var y = 1; y <= 8; y++) {
-                        if (board[x][y] == 'B') { // player 1
-                            b++;
-                        }
-                        if (board[x][y] == 'W') { // player 2
-                            w++;
-                        }
-                    }
-                }
-                message = 'black: ' + b + ' | white: ' + w + '</br>';
-                if (b == w) {
-                    message += 'draw';
-                }
-                else {
-                    message += ((b > w) ? 'black': 'white') + ' wins';
-                }
-                document.getElementById('message').innerHTML = message;
+                turn = 'E';
                 showBoard();
+                return;
             }
             
             // see this example : https://codepen.io/k44/pen/zKiIo
@@ -218,13 +210,42 @@
                                 var _col = col;
                                 // attach CLICK event handler to each cell
                                 cell.onclick = function(){
-                                    if(checkPiece(_row, _col, true)){
+                                    if (checkPiece(_row, _col, true)) {
                                         turnChange();
                                     }
                                 }
                             })();
                         }
                     }
+                }
+                //
+                if ((turn == 'B' ) || (turn == 'W'))
+                {
+                    var message = ((turn == 'B') ? 'black' : 'white');
+                    document.getElementById('message').innerHTML = message + "'s move";
+                }
+                else // if turn == 'E' // E for End of game
+                {
+                    var countB = 0;
+                    var countW = 0;
+                    for (var x = 1; x <= 8; x++) {
+                        for (var y = 1; y <= 8; y++) {
+                            if (board[x][y] == 'B') { // player 1
+                                countB++;
+                            }
+                            if (board[x][y] == 'W') { // player 2
+                                countW++;
+                            }
+                        }
+                    }
+                    message = 'black: ' + countB + ' | white: ' + countW + '</br>';
+                    if (countB == countW) {
+                        message += 'draw';
+                    }
+                    else {
+                        message += ((countB > countW) ? 'black': 'white') + ' wins';
+                    }
+                    document.getElementById('message').innerHTML = message;
                 }
             }
             
@@ -244,15 +265,8 @@
                         board[i][j] = '0';
                     }
                 }
-                /*board[4][5] = 'B'; //1;
-                board[5][4] = 'B'; //1;
-                board[4][4] = 'W'; //2
-                board[5][5] = 'W'; //2;*/
+                
                 gameCreate();
-
-                turn = 'B';//2;
-                //turnChange();
-                //showBoard();
             }
             
             var board = [];
