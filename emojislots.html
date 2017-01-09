@@ -156,54 +156,58 @@
             var turnChange = function() {
                 var b = 0;
                 var w = 0;
+                // step 1 : flip turn and check that new player has available options
                 //turn = 3 - turn;
                 turn = ((turn == 'W') ? 'B' : 'W');
                 var message = ((turn == 'B') ? 'black' : 'white'); //((turn ==1)?"black":"white");
                 for (var x = 1; x <= 8; x++) {
                     for (var y = 1; y <= 8; y++) {
                         if (board[x][y] == '0' && checkPiece(x, y, false)) {
-                            document.getElementById("message").innerHTML = message + "'s move";
+                            document.getElementById('message').innerHTML = message + "'s move";
                             showBoard();
-                            return;
+                            return; // returns with the flipped player
                         }
                     }
                 }
-                //turn = 3 - turn;
+                // conditional step 2 : IF the flipped player was blocked then revert and check if player has available moves
                 turn = ((turn == 'W') ? 'B' : 'W');
-                //message += " pass</br>" + ((turn ==1 )?"black":"white") + "'s move";
                 message += " pass</br>" + ((turn == 'B' )? 'black' : 'white') + "'s move";
                         
                 for (var x = 1; x <= 8; x++) {
                     for (var y = 1; y <= 8; y++) {
                         if (board[x][y] == '0' && checkPiece(x, y, false)) {
-                            document.getElementById("message").innerHTML = message;
+                            document.getElementById('message').innerHTML = message;
                             showBoard();
-                            return;
-                        } else {
-                            if (board[x][y] == 'B') { // player 1
-                                b++;
-                            }
-                            if (board[x][y] == 'W') { // player 2
-                                w++;
-                            }
+                            return; // return with the previous player
                         }
                     }
                 }
-                        
-                message = "black: " + b + " | white: " + w + "</br>";
-                if (black == white) {
-                    message += "draw";
+
+                // conditional step 3 : both players are blocked, so end the game
+                for (var x = 1; x <= 8; x++) {
+                    for (var y = 1; y <= 8; y++) {
+                        if (board[x][y] == 'B') { // player 1
+                            b++;
+                        }
+                        if (board[x][y] == 'W') { // player 2
+                            w++;
+                        }
+                    }
+                }
+                message = 'black: ' + b + ' | white: ' + w + '</br>';
+                if (b == w) {
+                    message += 'draw';
                 }
                 else {
-                    message += ((b > w)?"black":"white") + " wins";
+                    message += ((b > w) ? 'black': 'white') + ' wins';
                 }
-                document.getElementById("message").innerHTML = message;
+                document.getElementById('message').innerHTML = message;
                 showBoard();
             }
             
             // see this example : https://codepen.io/k44/pen/zKiIo
             var showBoard = function(){
-                var b = document.getElementById("board");
+                var b = document.getElementById('board');
                 while (b.firstChild){
                     b.removeChild(b.firstChild);
                 }
@@ -232,9 +236,9 @@
             var init = function() {
                 turn = 'W';//2;
                 piece = {
-                    '0': document.getElementById("empty"),
-                    'B': document.getElementById("black"),
-                    'W': document.getElementById("white")
+                    '0': document.getElementById('empty'),
+                    'B': document.getElementById('black'),
+                    'W': document.getElementById('white')
                 };
                 
                 for (var i = 0; i < 10; i++){
@@ -256,7 +260,7 @@
             
             window.onload = function() {
                 init();
-                document.getElementById("reset").onclick = function(){
+                document.getElementById('reset').onclick = function(){
                     init();
                 }
             }
@@ -277,62 +281,6 @@
             <p id="message"></p>
             <input type="button" id="reset" value="reset">
         </div>
-
-        <!--<div id="appframe">
-
-            <div id="board2">
-                <table>
-                    <tr id='row1'>
-                        <td id='11'><div class="cell"><div></td><td id='12'></td>
-                        <td id='13'></td><td id='14'></td>
-                        <td id='15'><div class="cell"><div></td><td id='16'></td>
-                        <td id='17'></td><td id='18'></td>
-                    </tr>
-                    <tr id='row2'>
-                        <td id='21'></td><td id='22'></td>
-                        <td id='23'></td><td id='24'></td>
-                        <td id='25'></td><td id='26'></td>
-                        <td id='27'></td><td id='28'></td>
-                    </tr>
-                    <tr id='row3'>
-                        <td id='31'></td><td id='32'></td>
-                        <td id='33'></td><td id='34'></td>
-                        <td id='35'></td><td id='36'></td>
-                        <td id='37'></td><td id='38'></td>
-                    </tr>
-                    <tr id='row4'>
-                        <td id='41'></td><td id='42'></td>
-                        <td id='43'></td><td id='44'></td>
-                        <td id='45'></td><td id='46'></td>
-                        <td id='47'></td><td id='48'></td>
-                    </tr>
-                    <tr id='row5'>
-                        <td id='51'></td><td id='52'></td>
-                        <td id='53'></td><td id='54'></td>
-                        <td id='55'></td><td id='56'></td>
-                        <td id='57'></td><td id='58'></td>
-                    </tr>
-                    <tr id='row6'>
-                        <td id='61'><div class="cell"><div></td><td id='62'></td>
-                        <td id='63'></td><td id='64'></td>
-                        <td id='65'></td><td id='66'></td>
-                        <td id='67'></td><td id='68'></td>
-                    </tr>
-                    <tr id='row7'>
-                        <td id='71'></td><td id='72'></td>
-                        <td id='73'></td><td id='74'></td>
-                        <td id='75'></td><td id='76'></td>
-                        <td id='77'></td><td id='78'></td>
-                    </tr>
-                    <tr id='row8'>
-                        <td id='81'></td><td id='82'></td>
-                        <td id='83'></td><td id='84'></td>
-                        <td id='85'></td><td id='86'></td>
-                        <td id='87'></td><td id='88'></td>
-                    </tr>
-                </table>
-            </div>
-
-        </div>-->
+        
     </body>
 </html>
