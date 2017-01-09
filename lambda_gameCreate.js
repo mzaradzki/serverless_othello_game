@@ -25,7 +25,17 @@ exports.handler = (event, context, callback) => {
         start_stamp: start_stamp
     };
     
-    var board = ['00000000','00000000','00000000','000BW000','000WB000','00000000','00000000','00000000'];
+    // board is 10x10 for padding reasons
+    var board = [   '0000000000',// padding
+                    '0000000000',
+                    '0000000000',
+                    '0000000000',
+                    '0000BW0000',
+                    '0000WB0000',
+                    '0000000000',
+                    '0000000000',
+                    '0000000000',
+                    '0000000000']; //padding
     
     var params = {
         TableName :'Othello',

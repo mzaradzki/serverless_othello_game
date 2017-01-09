@@ -71,24 +71,6 @@
                     }
                 });
             }
-            
-            /*function initiatePull() {
-                var pullParams = {
-                    FunctionName : 'slotPull',
-                    InvocationType : 'RequestResponse',
-                    Payload: '{ "name" : "Math" }',
-                    LogType : 'None'
-                }
-                // Call the Lambda function to collect the spin results
-                lambda.invoke(pullParams, function(err, data) {
-                    if (err) {
-                        prompt(err);
-                    } else {
-                        var pullResults = JSON.parse(data.Payload);
-                        console.log(pullResults);
-                    }
-                }); 
-            }*/
 
             var docClient = new AWS.DynamoDB.DocumentClient();
 
@@ -106,9 +88,9 @@
                     } else {
                         console.log("GetItem succeeded: " + "\n" + JSON.stringify(data, undefined, 2));
                         //
-                        for(var i = 1; i < 9; i++){
-                            for(var j = 1; j < 9; j++){
-                                board[i][j] = data.Item.board[i-1][j-1];
+                        for(var i=0; i<10; i++){
+                            for(var j = 0; j<10; j++){
+                                board[i][j] = data.Item.board[i][j];
                             }
                         }
                         showBoard();
@@ -244,19 +226,20 @@
                 while (b.firstChild){
                     b.removeChild(b.firstChild);
                 }
-                for (var y = 1; y <= 8; y++){
-                    for (var x = 1; x <= 8; x++){
-                        var c = piece[board[x][y]].cloneNode(true);
-                        c.style.left = ((x - 1) * 32) + "px";
-                        c.style.top = ((y - 1) * 32) + "px";
-                        b.appendChild(c);
+                for (var row=1; row<=8; row++){
+                    for (var col=1; col<=8; col++){
+                        var cell = piece[board[row][col]].cloneNode(true);
+                        cell.style.top = ((row - 1) * 32) + "px";
+                        cell.style.left = ((col - 1) * 32) + "px";
+                        b.appendChild(cell);
                         
-                        if (board[x][y] == '0'){
+                        if (board[row][col] == '0'){
                             (function(){
-                                var _x = x, _y = y;
+                                var _row = row;
+                                var _col = col;
                                 // attach CLICK event handler to each cell
-                                c.onclick = function(){
-                                    if(checkPiece(_x, _y, true)){
+                                cell.onclick = function(){
+                                    if(checkPiece(_row, _col, true)){
                                         turnChange();
                                     }
                                 }
