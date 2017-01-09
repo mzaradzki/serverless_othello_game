@@ -43,6 +43,26 @@
             
             // Prepare to call Lambda function
             var lambda = new AWS.Lambda({region: 'eu-west-1', apiVersion: '2015-03-31'});
+
+            function gameCreate() {
+                var Payload = {};
+                var lambdaParams = {
+                    FunctionName : 'gameCreate',
+                    InvocationType : 'RequestResponse',
+                    Payload: JSON.stringify(Payload),
+                    LogType : 'None'
+                };
+                // Call the Lambda function to collect the spin results
+                lambda.invoke(lambdaParams, function(err, data) {
+                    if (err) {
+                        prompt(err);
+                    } else {
+                        var pullResults = JSON.parse(data.Payload);
+                        console.log(pullResults.game_id);
+                        console.log(pullResults.start_stamp);
+                    }
+                });
+            }
             
             
             function initiatePull() {
@@ -57,7 +77,7 @@
                     if (err) {
                         prompt(err);
                     } else {
-                        pullResults = JSON.parse(data.Payload);
+                        var pullResults = JSON.parse(data.Payload);
                         console.log(pullResults);
                     }
                 }); 
@@ -110,7 +130,7 @@
                     if (err) {
                         prompt(err);
                     } else {
-                        pullResults = JSON.parse(data.Payload);
+                        var pullResults = JSON.parse(data.Payload);
                         console.log(pullResults);
                     }
                 });
@@ -247,6 +267,7 @@
                     'W': document.getElementById('white')
                 };
                 
+                // Should call a Lambda function to create a new DB entry
                 for (var i = 0; i < 10; i++){
                     board[i] = [];
                     for (var j = 0; j < 10; j++){
