@@ -15,7 +15,6 @@
             var identityId = null;
             // see documentation at : http://docs.aws.amazon.com/cognito/latest/developerguide/google.html
             AWS.config.credentials.get(function(){
-
                 // Credentials will be available when this function is called.
                 var accessKeyId = AWS.config.credentials.accessKeyId;
                 var secretAccessKey = AWS.config.credentials.secretAccessKey;
@@ -23,18 +22,15 @@
 
                 identityId = AWS.config.credentials.identityId;
                 console.log(identityId);
+                //alert(identityId);
             });
 
-
-
-            var game = null;
 
             var GAME_ID = null;
             var START_STAMP = null;
 
-            // to update a record :
+            // to create, read, update a DB record :
             // http://docs.aws.amazon.com/amazondynamodb/latest/gettingstartedguide/GettingStarted.Js.03.html#GettingStarted.Js.03.01
-
 
             // Lambda calls from Javascript documented here :
             // http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/browser-invoke-lambda-function-example.html
@@ -62,14 +58,14 @@
                         console.log(pullResults.start_stamp);
                         GAME_ID = pullResults.game_id;
                         START_STAMP = pullResults.start_stamp;
-                        readItem();
+                        gameRead();
                     }
                 });
             }
 
             var docClient = new AWS.DynamoDB.DocumentClient();
 
-            function readItem() {
+            function gameRead() {
                 var params = {
                     TableName: 'Othello',
                     Key: {
@@ -98,7 +94,7 @@
                 var Payload = {
                     'game_id': game_id,
                     'start_stamp': start_stamp,
-                    'player': player,
+                    'player': player, // we pass the player as well to insure consistency with expected turn
                     'row': row,
                     'column': column
                 };
@@ -265,7 +261,7 @@
                         board[i][j] = '0';
                     }
                 }
-                
+
                 gameCreate();
             }
             
