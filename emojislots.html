@@ -79,34 +79,15 @@
                         console.log("Unable to read item: " + "\n" + JSON.stringify(err, undefined, 2));
                     } else {
                         console.log("GetItem succeeded: " + "\n" + JSON.stringify(data, undefined, 2));
-                        drawBoard(data);
+                        //
+                        for(var i = 1; i < 9; i++){
+                            for(var j = 1; j < 9; j++){
+                                board[i][j] = data.Item.board[i-1][j-1];
+                            }
+                        }
+                        showBoard();
                     }
                 });
-            }
-
-            function drawBoard(data)
-            {
-                console.log(data.Item.board);
-                /*for (var i=0; i<8; i++) {
-                    for (var j=0; j<8; j++) {
-                        document.getElementById(''+(i+1)+(j+1)).innerHTML = data.Item.board[i][j];
-                    }
-                }*/
-                for(var i = 1; i < 9; i++){
-                    for(var j = 1; j < 9; j++){
-                        var cellval = data.Item.board[i-1][j-1];
-                        if (cellval=='B') {
-                            board[i][j] = 1;
-                        }
-                        else if (cellval=='W') {
-                            board[i][j] = 2;
-                        }
-                        else {
-                            board[i][j] = 0;
-                        }
-                    }
-                }
-                showBoard();
             }
             
             function boardUpdate(game_id, start_stamp, player, row, column) {
@@ -140,25 +121,25 @@
             
             // see this example : https://codepen.io/k44/pen/zKiIo
             // this function checks that a cell can be flipped and *optionaly* flips it
-            var checkPiece = function(x, y, flip){
+            var checkPiece = function(x, y, flip) {
                 var ret = 0;
-                for(var dx = -1; dx <= 1; dx++){
-                    for(var dy = -1; dy <= 1; dy++){
-                        if(dx == 0 && dy == 0){
+                for (var dx = -1; dx <= 1; dx++) {
+                    for (var dy = -1; dy <= 1; dy++) {
+                        if (dx == 0 && dy == 0) {
                             continue;
                         }
                         var nx = x + dx, ny = y + dy, n = 0;
-                        while(board[nx][ny] == 3 - turn){
+                        while (board[nx][ny] == ((turn == 'W') ? 'B' : 'W')) {
                             n++;
                             nx += dx;
                             ny += dy;
                         }
-                        if(n > 0 && board[nx][ny] == turn){
+                        if (n > 0 && board[nx][ny] == turn) {
                             ret += n;
-                            if(flip){
+                            if (flip) {
                                 nx = x + dx;
                                 ny = y + dy;
-                                while(board[nx][ny] == 3 - turn){
+                                while (board[nx][ny] == ((turn == 'W') ? 'B' : 'W')) {
                                     board[nx][ny] = turn;
                                     nx += dx;
                                     ny += dy;
@@ -172,34 +153,37 @@
             }
             
             // see this example : https://codepen.io/k44/pen/zKiIo
-            var turnChange = function(){
+            var turnChange = function() {
                 var b = 0;
                 var w = 0;
-                turn = 3 - turn;
-                var message = ((turn ==1)?"black":"white");
-                for(var x = 1; x <= 8; x++){
-                    for(var y = 1; y <= 8; y++){
-                        if(board[x][y] == 0 && checkPiece(x, y, false)){
+                //turn = 3 - turn;
+                turn = ((turn == 'W') ? 'B' : 'W');
+                var message = ((turn == 'B') ? 'black' : 'white'); //((turn ==1)?"black":"white");
+                for (var x = 1; x <= 8; x++) {
+                    for (var y = 1; y <= 8; y++) {
+                        if (board[x][y] == '0' && checkPiece(x, y, false)) {
                             document.getElementById("message").innerHTML = message + "'s move";
                             showBoard();
                             return;
                         }
                     }
                 }
-                turn = 3 - turn;
-                message += " pass</br>" + ((turn ==1 )?"black":"white") + "'s move";
+                //turn = 3 - turn;
+                turn = ((turn == 'W') ? 'B' : 'W');
+                //message += " pass</br>" + ((turn ==1 )?"black":"white") + "'s move";
+                message += " pass</br>" + ((turn == 'B' )? 'black' : 'white') + "'s move";
                         
-                for(var x = 1; x <= 8; x++){
-                    for(var y = 1; y <= 8; y++){
-                        if(board[x][y] == 0 && checkPiece(x, y, false)){
+                for (var x = 1; x <= 8; x++) {
+                    for (var y = 1; y <= 8; y++) {
+                        if (board[x][y] == '0' && checkPiece(x, y, false)) {
                             document.getElementById("message").innerHTML = message;
                             showBoard();
                             return;
-                        }else{
-                            if(board[x][y] == 1){
+                        } else {
+                            if (board[x][y] == 'B') { // player 1
                                 b++;
                             }
-                            if(board[x][y] == 2){
+                            if (board[x][y] == 'W') { // player 2
                                 w++;
                             }
                         }
@@ -207,29 +191,30 @@
                 }
                         
                 message = "black: " + b + " | white: " + w + "</br>";
-                    if (black == white){
-                        message += "draw";
-                    }else{
-                        message += ((b > w)?"black":"white") + " wins";
-                    }
-                    document.getElementById("message").innerHTML = message;
-                    showBoard();
+                if (black == white) {
+                    message += "draw";
+                }
+                else {
+                    message += ((b > w)?"black":"white") + " wins";
+                }
+                document.getElementById("message").innerHTML = message;
+                showBoard();
             }
             
             // see this example : https://codepen.io/k44/pen/zKiIo
             var showBoard = function(){
                 var b = document.getElementById("board");
-                while(b.firstChild){
+                while (b.firstChild){
                     b.removeChild(b.firstChild);
                 }
-                for(var y = 1; y <= 8; y++){
-                    for(var x = 1; x <= 8; x++){
+                for (var y = 1; y <= 8; y++){
+                    for (var x = 1; x <= 8; x++){
                         var c = piece[board[x][y]].cloneNode(true);
                         c.style.left = ((x - 1) * 32) + "px";
                         c.style.top = ((y - 1) * 32) + "px";
                         b.appendChild(c);
                         
-                        if(board[x][y] == 0){
+                        if (board[x][y] == '0'){
                             (function(){
                                 var _x = x, _y = y;
                                 // attach CLICK event handler to each cell
@@ -240,37 +225,36 @@
                                 }
                             })();
                         }
-                        
                     }
                 }
             }
             
-            var init = function(){
-                turn = 2;
-                piece = [
-                    document.getElementById("empty"),
-                    document.getElementById("black"),
-                    document.getElementById("white")
-                ];
+            var init = function() {
+                turn = 'W';//2;
+                piece = {
+                    '0': document.getElementById("empty"),
+                    'B': document.getElementById("black"),
+                    'W': document.getElementById("white")
+                };
                 
-                for(var i = 0; i < 10; i++){
+                for (var i = 0; i < 10; i++){
                     board[i] = [];
-                    for(var j = 0; j < 10; j++){
-                        board[i][j] = 0;
+                    for (var j = 0; j < 10; j++){
+                        board[i][j] = '0';
                     }
                 }
                 
-                board[4][5] = 1;
-                board[5][4] = 1;
-                board[4][4] = 2;
-                board[5][5] = 2;
+                board[4][5] = 'B'; //1;
+                board[5][4] = 'B'; //1;
+                board[4][4] = 'W'; //2
+                board[5][5] = 'W'; //2;
                 turnChange();
                 showBoard();
             }
             
             var board = [];
-                    
-            window.onload = function(){
+            
+            window.onload = function() {
                 init();
                 document.getElementById("reset").onclick = function(){
                     init();
