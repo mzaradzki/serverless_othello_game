@@ -11,32 +11,11 @@
             AWS.config.update({region: 'eu-west-1'});
             AWS.config.credentials = new AWS.CognitoIdentityCredentials({IdentityPoolId: 'eu-west-1:8fd4aff6-c2e8-42f8-858c-21080b3a9a4b'});
 
-            //var dynamodb = new AWS.DynamoDB();          
-
             var game = null;
 
             var GAME_ID = null;
             var START_STAMP = null;
 
-            /* Makes a scan of the DynamoDB table to set a data object for the chart */
-            /*function getData() {
-                var params = { TableName: 'Othello' };
-                dynamodb.scan(params, function(err, data) {
-                    if (err) {
-                        console.log(err);
-                        return null;
-                    }
-                    else {
-                        console.log(data);
-                        //game = data.Items[0]; // maybe easier to update ?
-                        var aux = data.Items[0];
-                        game = {};
-                        //game['board'] = aux.board.SS;
-                        game['turn'] = aux.turn.S;
-                        game['start_stamp'] = aux.start_stamp.N;
-                    }
-                });
-            }*/
             // to update a record :
             // http://docs.aws.amazon.com/amazondynamodb/latest/gettingstartedguide/GettingStarted.Js.03.html#GettingStarted.Js.03.01
 
