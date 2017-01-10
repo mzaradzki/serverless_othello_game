@@ -24,7 +24,8 @@
 
             // to create, read, update a DB record :
             // http://docs.aws.amazon.com/amazondynamodb/latest/gettingstartedguide/GettingStarted.Js.03.html#GettingStarted.Js.03.01
-
+            var docClient = new AWS.DynamoDB.DocumentClient();
+            
             // Lambda calls from Javascript documented here :
             // http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/browser-invoke-lambda-function-example.html
             
@@ -40,7 +41,9 @@
                     }
                 }
 
-                var Payload = {};
+                var Payload = {
+                    'player_identity_id': AWS.config.credentials.identityId,
+                };
                 var lambdaParams = {
                     FunctionName : 'gameCreate',
                     InvocationType : 'RequestResponse',
@@ -64,7 +67,30 @@
                 });
             }
 
-            var docClient = new AWS.DynamoDB.DocumentClient();
+            function gamesList() {
+                var params = {
+                    TableName: 'Othello',
+                    FilterExpression: "#playerid = :pidid",
+                    ExpressionAttributeNames: {
+                        "#playerid": "player_identity_id"
+                    },
+                    ExpressionAttributeValues: {
+                        ":pidid": AWS.config.credentials.identityId
+                    }
+                };
+                docClient.scan(params, function(err, data) {
+                    if (err) {
+                        console.log(err);
+                        return null;
+                    }
+                    else
+                    {
+                        for (var i in data['Items']) {
+                            console.log(data['Items'][i]);
+                        }
+                    }
+                });
+            }
 
             function gameRead() {
                 var params = {
@@ -267,35 +293,24 @@
                     'graph.facebook.com': response.authResponse.accessToken
                   }
                 });*/
-                /*
                 // Make the call to obtain credentials
                 // see documentation at : http://docs.aws.amazon.com/cognito/latest/developerguide/google.html
                 AWS.config.credentials.get(function(){
                     // Credentials will be available when this function is called.
-                    var accessKeyId = AWS.config.credentials.accessKeyId;
-                    var secretAccessKey = AWS.config.credentials.secretAccessKey;
-                    var sessionToken = AWS.config.credentials.sessionToken;
-                    identityId = AWS.config.credentials.identityId;
-                    console.log(identityId);
-                    //alert(identityId);
-                });*/
-                initPiece();
-                gameCreate()
-                document.getElementById('reset').onclick = function(){
-                    gameCreate();
-                }
+                    //var accessKeyId = AWS.config.credentials.accessKeyId;
+                    //var secretAccessKey = AWS.config.credentials.secretAccessKey;
+                    //var sessionToken = AWS.config.credentials.sessionToken;
+                    //alert(AWS.config.credentials.identityId);
+                    initPiece();
+                    gameCreate()
+                    document.getElementById('reset').onclick = function(){
+                        gameCreate();
+                    }
+                    //$('.loading').hide();
+                    $('#wrap').show();
+                });
             }
 
-            /*window.onload = function() {
-                initPiece();
-                initGame()
-                document.getElementById('reset').onclick = function(){
-                    initGame();
-                }
-            }*/
-
-        </script>
-        <script>
             // This is called with the results from FB.getLoginStatus().
             function statusChangeCallback(response) {
                 console.log('statusChangeCallback');
@@ -332,28 +347,21 @@
             window.fbAsyncInit = function() {
                 FB.init({
                     appId      : '1632143563747690',
-                    cookie     : true,  // enable cookies to allow the server to access 
-                                        // the session
+                    cookie     : true,  // enable cookies to allow the server to access the session
                     xfbml      : true,  // parse social plugins on this page
                     version    : 'v2.8' // use graph api version 2.8
                 });
-
                 // Now that we've initialized the JavaScript SDK, we call 
                 // FB.getLoginStatus().  This function gets the state of the
                 // person visiting this page and can return one of three states to
-                // the callback you provide.  They can be:
-                //
+                // the callback you provide.
+                // They can be :
                 // 1. Logged into your app ('connected')
                 // 2. Logged into Facebook, but not your app ('not_authorized')
-                // 3. Not logged into Facebook and can't tell if they are logged into
-                //    your app or not.
-                //
-                // These three cases are handled in the callback function.
-
+                // 3. Not logged into Facebook and can't tell if they are logged into your app or not.
                 FB.getLoginStatus(function(response) {
                     statusChangeCallback(response);
                 });
-
             };
 
             // Load the SDK asynchronously
@@ -387,7 +395,7 @@
             <div id="white" class="cell"><div></div></div>
         </div>
 
-        <div id="wrap">
+        <div id="wrap" style="display: none;">
             <h1>OLLEHTO</h1>
             <div id="board"></div>
             <p id="message"></p>
