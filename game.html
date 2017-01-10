@@ -14,24 +14,13 @@
                     IdentityPoolId: 'eu-west-1:8fd4aff6-c2e8-42f8-858c-21080b3a9a4b'
                 }
             );
-
-            // Make the call to obtain credentials
-            var identityId = null;
-            // see documentation at : http://docs.aws.amazon.com/cognito/latest/developerguide/google.html
-            AWS.config.credentials.get(function(){
-                // Credentials will be available when this function is called.
-                var accessKeyId = AWS.config.credentials.accessKeyId;
-                var secretAccessKey = AWS.config.credentials.secretAccessKey;
-                var sessionToken = AWS.config.credentials.sessionToken;
-
-                identityId = AWS.config.credentials.identityId;
-                console.log(identityId);
-                //alert(identityId);
-            });
-
-
+            
             var GAME_ID = null;
             var START_STAMP = null;
+
+            var board = [];
+            var piece = [];
+            var turn;
 
             // to create, read, update a DB record :
             // http://docs.aws.amazon.com/amazondynamodb/latest/gettingstartedguide/GettingStarted.Js.03.html#GettingStarted.Js.03.01
@@ -43,6 +32,14 @@
             var lambda = new AWS.Lambda({region: 'eu-west-1', apiVersion: '2015-03-31'});
 
             function gameCreate() {
+
+                for (var i = 0; i < 10; i++){
+                    board[i] = [];
+                    for (var j = 0; j < 10; j++){
+                        board[i][j] = '0';
+                    }
+                }
+
                 var Payload = {};
                 var lambdaParams = {
                     FunctionName : 'gameCreate',
@@ -120,9 +117,6 @@
                 });
             }
 
-            var piece = [];
-            var turn;
-            
             // see this example : https://codepen.io/k44/pen/zKiIo
             // this function checks that a cell can be flipped and *optionaly* flips it
             var checkPiece = function(x, y, flip) {
@@ -257,31 +251,52 @@
                 };
             }
 
-            var initGame = function() {
-                // Should call a Lambda function to create a new DB entry
-                for (var i = 0; i < 10; i++){
-                    board[i] = [];
-                    for (var j = 0; j < 10; j++){
-                        board[i][j] = '0';
-                    }
+            var initWithFacebook = function (accessToken) {
+                //
+                // Called when an identity provider has a token for a logged in user
+                //console.log(AWS.config.credentials.identityId);
+                AWS.config.credentials.params.Logins = {};
+                AWS.config.credentials.params.Logins['graph.facebook.com'] = accessToken;
+                // Expire credentials to refresh them on the next request
+                AWS.config.credentials.expired = true;
+                //console.log(AWS.config.credentials.identityId);
+                // Add the Facebook access token to the Cognito credentials login map.
+                /*AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                  IdentityPoolId: 'eu-west-1:8fd4aff6-c2e8-42f8-858c-21080b3a9a4b',
+                  Logins: {
+                    'graph.facebook.com': response.authResponse.accessToken
+                  }
+                });*/
+                /*
+                // Make the call to obtain credentials
+                // see documentation at : http://docs.aws.amazon.com/cognito/latest/developerguide/google.html
+                AWS.config.credentials.get(function(){
+                    // Credentials will be available when this function is called.
+                    var accessKeyId = AWS.config.credentials.accessKeyId;
+                    var secretAccessKey = AWS.config.credentials.secretAccessKey;
+                    var sessionToken = AWS.config.credentials.sessionToken;
+                    identityId = AWS.config.credentials.identityId;
+                    console.log(identityId);
+                    //alert(identityId);
+                });*/
+                initPiece();
+                gameCreate()
+                document.getElementById('reset').onclick = function(){
+                    gameCreate();
                 }
-
-                gameCreate();
             }
-            
-            var board = [];
-            
-            window.onload = function() {
+
+            /*window.onload = function() {
                 initPiece();
                 initGame()
                 document.getElementById('reset').onclick = function(){
                     initGame();
                 }
-            }
+            }*/
 
         </script>
         <script>
-            // This is called with the results from from FB.getLoginStatus().
+            // This is called with the results from FB.getLoginStatus().
             function statusChangeCallback(response) {
                 console.log('statusChangeCallback');
                 console.log(response);
@@ -292,24 +307,7 @@
                 if (response.status === 'connected') {
                     // Logged into your app and Facebook.
                     testAPI();
-                    //
-                    // Add the Facebook access token to the Cognito credentials login map.
-                    /*AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-                      IdentityPoolId: 'eu-west-1:8fd4aff6-c2e8-42f8-858c-21080b3a9a4b',
-                      Logins: {
-                        'graph.facebook.com': response.authResponse.accessToken
-                      }
-                    });
-                    AWS.config.credentials.get(function(){
-                        // Credentials will be available when this function is called.
-                        var accessKeyId = AWS.config.credentials.accessKeyId;
-                        var secretAccessKey = AWS.config.credentials.secretAccessKey;
-                        var sessionToken = AWS.config.credentials.sessionToken;
-
-                        identityId = AWS.config.credentials.identityId;
-                        console.log(identityId);
-                        //alert(identityId);
-                    });*/
+                    initWithFacebook(response.authResponse.accessToken);
                 }
                 else if (response.status === 'not_authorized') {
                     // The person is logged into Facebook, but not your app.
