@@ -29,3 +29,13 @@ To save all the AWS configurations one can use a template file such as ChessGame
 When testing it is best to emulate a server rather than directly opening the html files in the browser.
 For example launch the site from the console with :
 python -m SimpleHTTPServer
+
+
+Misc.:
+* When creating a game needs to pass identityId to Lambda function to record the 2 game owners
+* When loading a game needs to pass identityId to Lambda to check against game owners
+* When logging-off needs to delete credentials and to reset UI
+* A user should not be able to create a new fresh game (unknown game partner) if he already has one in the DB
+* A user should not be able to have more than 1 game open against a given game partner
+* Display a listing of open games for a given user
+* Display a listing of closed games for a given user
