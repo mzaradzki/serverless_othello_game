@@ -33,13 +33,6 @@
 
             function gameCreate() {
 
-                for (var i = 0; i < 10; i++){
-                    board[i] = [];
-                    for (var j = 0; j < 10; j++){
-                        board[i][j] = '0';
-                    }
-                }
-
                 var Payload = {
                     'player_identity_id': AWS.config.credentials.identityId,
                 };
@@ -49,7 +42,7 @@
                     Payload: JSON.stringify(Payload),
                     LogType : 'None'
                 };
-                // Call the Lambda function to collect the spin results
+                // Call the Lambda function
                 lambda.invoke(lambdaParams, function(err, data) {
                     if (err) {
                         console.log(err);
@@ -61,7 +54,7 @@
                         console.log(pullResults.start_stamp);
                         GAME_ID = pullResults.game_id;
                         START_STAMP = pullResults.start_stamp;
-                        gameRead();
+                        gamesList()
                     }
                 });
             }
@@ -122,10 +115,9 @@
                     //var secretAccessKey = AWS.config.credentials.secretAccessKey;
                     //var sessionToken = AWS.config.credentials.sessionToken;
                     //alert(AWS.config.credentials.identityId);
-                    /*gameCreate()
-                    document.getElementById('reset').onclick = function(){
+                    document.getElementById('newgame').onclick = function(){
                         gameCreate();
-                    }*/
+                    }
                     //$('.loading').hide();
                     gamesList();
                     $('#gamelist').show();
@@ -167,6 +159,7 @@
         <div id="wrap">
             <h1>OLLEHTO</h1>
             <div id="gamelist" style="display: none;"></div>
+            <input type="button" id="newgame" value="new game">
         </div>
 
     </body>
