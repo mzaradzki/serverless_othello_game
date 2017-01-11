@@ -43,7 +43,8 @@ exports.handler = (event, context, callback) => {
             'game_id': game_id,
             'start_stamp': start_stamp,
             'board': board,
-            'turn': 'B'
+            'turn': 'B',
+            'player_identity_id': event.player_identity_id
         }
     };
     docClient.put(params, function(err, data) {
