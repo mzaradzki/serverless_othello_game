@@ -17,11 +17,6 @@
                 }
             );
             
-            var GAME_ID = null;
-            var START_STAMP = null;
-
-            var board = [];
-
             // to create, read, update a DB record :
             // http://docs.aws.amazon.com/amazondynamodb/latest/gettingstartedguide/GettingStarted.Js.03.html#GettingStarted.Js.03.01
             var docClient = new AWS.DynamoDB.DocumentClient();
@@ -47,14 +42,14 @@
                 lambda.invoke(lambdaParams, function(err, data) {
                     if (err) {
                         console.log(err);
-                        GAME_ID = null;
-                        START_STAMP = null;
+                        //GAME_ID = null;
+                        //START_STAMP = null;
                     } else {
                         var pullResults = JSON.parse(data.Payload);
                         console.log(pullResults.game_id);
                         console.log(pullResults.start_stamp);
-                        GAME_ID = pullResults.game_id;
-                        START_STAMP = pullResults.start_stamp;
+                        //GAME_ID = pullResults.game_id;
+                        //START_STAMP = pullResults.start_stamp;
                         gamesList()
                     }
                 });
@@ -80,20 +75,23 @@
                     {
                         var ihtml = "<table class='table'>";
                         ihtml+= '<tr><th>'+'date'+'</th><th>'+'turn'+'</th><th>'+'game'+'</th></tr>';
-                        for (var i in data['Items']) {
-                            console.log(data['Items'][i]);
-                            var gamedate = new Date(data['Items'][i].start_stamp);
+                        var items = data['Items'];
+                        items.sort(function(a, b){return b.start_stamp-a.start_stamp});
+                        var firstitems = items.slice(0, 10);
+                        for (var i in firstitems) {
+                            var item = firstitems[i];
+                            console.log(item);
+                            var gamedate = new Date(item.start_stamp);
                             var gameurl = 'game.html?';
-                            gameurl+= 'game_id=' + encodeURIComponent(data['Items'][i].game_id);
-                            gameurl+= '&start_stamp=' + encodeURIComponent(data['Items'][i].start_stamp);
-                            ihtml+= '<tr><td>'+gamedate.toUTCString()+'</td><td>'+data['Items'][i].turn+'</td><td><a href="'+gameurl+'">open</a></td></tr>';
+                            gameurl+= 'game_id=' + encodeURIComponent(item.game_id);
+                            gameurl+= '&start_stamp=' + encodeURIComponent(item.start_stamp);
+                            ihtml+= '<tr><td>'+gamedate.toUTCString()+'</td><td>'+item.turn+'</td><td><a href="'+gameurl+'">open</a></td></tr>';
                         }
                         ihtml+= "</table>";
                         document.getElementById('gamelist').innerHTML = ihtml;
                     }
                 });
             }
-
             
             
             var initWithFacebook = function (accessToken) {
