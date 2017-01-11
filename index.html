@@ -80,7 +80,7 @@
                         var firstitems = items.slice(0, 10);
                         for (var i in firstitems) {
                             var item = firstitems[i];
-                            console.log(item);
+                            //console.log(item);
                             var gamedate = new Date(item.start_stamp);
                             var gameurl = 'game.html?';
                             gameurl+= 'game_id=' + encodeURIComponent(item.game_id);
@@ -167,11 +167,11 @@
                         <h1>Hello Ollehto!</h1>
                         <!--<p>...</p>
                         <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a></p>-->
-                        <fb:login-button scope="public_profile,email" onlogin="checkLoginState();" autologoutlink="true"></fb:login-button>
+                        <fb:login-button scope="public_profile,email,user_friends" onlogin="checkLoginState();" autologoutlink="true"></fb:login-button>
                     </div>
 
                     <div id="main" style="display: none;">
-                        <fb:login-button scope="public_profile,email" onlogin="checkLoginState();" autologoutlink="true"></fb:login-button>
+                        <fb:login-button scope="public_profile,email,user_friends" onlogin="checkLoginState();" autologoutlink="true"></fb:login-button>
                         <div id="status"></div>
 
                         <div>
