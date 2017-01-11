@@ -1,4 +1,9 @@
 
+body {
+  padding-top: 50px;
+}
+
+
 #template{
 	display:none;
 }
