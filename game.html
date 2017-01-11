@@ -6,6 +6,7 @@
         <link href="game.css" rel="stylesheet" type="text/css">
         <script src="https://sdk.amazonaws.com/js/aws-sdk-2.7.20.min.js"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script src="facebook.js"></script>
         <script type="text/javascript">
             // Configure AWS SDK for JavaScript
             AWS.config.update({region: 'eu-west-1'});
@@ -25,7 +26,7 @@
             // to create, read, update a DB record :
             // http://docs.aws.amazon.com/amazondynamodb/latest/gettingstartedguide/GettingStarted.Js.03.html#GettingStarted.Js.03.01
             var docClient = new AWS.DynamoDB.DocumentClient();
-            
+
             // Lambda calls from Javascript documented here :
             // http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/browser-invoke-lambda-function-example.html
             
@@ -63,31 +64,6 @@
                         GAME_ID = pullResults.game_id;
                         START_STAMP = pullResults.start_stamp;
                         gameRead();
-                    }
-                });
-            }
-
-            function gamesList() {
-                var params = {
-                    TableName: 'Othello',
-                    FilterExpression: "#playerid = :pidid",
-                    ExpressionAttributeNames: {
-                        "#playerid": "player_identity_id"
-                    },
-                    ExpressionAttributeValues: {
-                        ":pidid": AWS.config.credentials.identityId
-                    }
-                };
-                docClient.scan(params, function(err, data) {
-                    if (err) {
-                        console.log(err);
-                        return null;
-                    }
-                    else
-                    {
-                        for (var i in data['Items']) {
-                            console.log(data['Items'][i]);
-                        }
                     }
                 });
             }
@@ -333,54 +309,6 @@
                   // they are logged into this app or not.
                   document.getElementById('status').innerHTML = 'Please log into Facebook.';
                 }
-            }
-
-            // This function is called when someone finishes with the Login
-            // Button.  See the onlogin handler attached to it in the sample
-            // code below.
-            function checkLoginState() {
-                FB.getLoginStatus(function(response) {
-                    statusChangeCallback(response);
-                });
-            }
-
-            window.fbAsyncInit = function() {
-                FB.init({
-                    appId      : '1632143563747690',
-                    cookie     : true,  // enable cookies to allow the server to access the session
-                    xfbml      : true,  // parse social plugins on this page
-                    version    : 'v2.8' // use graph api version 2.8
-                });
-                // Now that we've initialized the JavaScript SDK, we call 
-                // FB.getLoginStatus().  This function gets the state of the
-                // person visiting this page and can return one of three states to
-                // the callback you provide.
-                // They can be :
-                // 1. Logged into your app ('connected')
-                // 2. Logged into Facebook, but not your app ('not_authorized')
-                // 3. Not logged into Facebook and can't tell if they are logged into your app or not.
-                FB.getLoginStatus(function(response) {
-                    statusChangeCallback(response);
-                });
-            };
-
-            // Load the SDK asynchronously
-            (function(d, s, id) {
-                var js, fjs = d.getElementsByTagName(s)[0];
-                if (d.getElementById(id)) return;
-                js = d.createElement(s); js.id = id;
-                js.src = "//connect.facebook.net/en_US/sdk.js";
-                fjs.parentNode.insertBefore(js, fjs);
-            }(document, 'script', 'facebook-jssdk'));
-
-            // Here we run a very simple test of the Graph API after login is
-            // successful.  See statusChangeCallback() for when this call is made.
-            function testAPI() {
-                console.log('Welcome!  Fetching your information.... ');
-                FB.api('/me', function(response) {
-                    console.log('Successful login for: ' + response.name);
-                    document.getElementById('status').innerHTML = 'Thanks for logging in, ' + response.name + '!';
-                });
             }
         </script>
     </head>
