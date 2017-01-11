@@ -1,0 +1,173 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>OLLEHTO</title>
+        <link href="game.css" rel="stylesheet" type="text/css">
+        <script src="https://sdk.amazonaws.com/js/aws-sdk-2.7.20.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script src="facebook.js"></script>
+        <script type="text/javascript">
+            // Configure AWS SDK for JavaScript
+            AWS.config.update({region: 'eu-west-1'});
+            AWS.config.credentials = new AWS.CognitoIdentityCredentials(
+                {
+                    IdentityPoolId: 'eu-west-1:8fd4aff6-c2e8-42f8-858c-21080b3a9a4b'
+                }
+            );
+            
+            var GAME_ID = null;
+            var START_STAMP = null;
+
+            var board = [];
+
+            // to create, read, update a DB record :
+            // http://docs.aws.amazon.com/amazondynamodb/latest/gettingstartedguide/GettingStarted.Js.03.html#GettingStarted.Js.03.01
+            var docClient = new AWS.DynamoDB.DocumentClient();
+            
+            // Lambda calls from Javascript documented here :
+            // http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/browser-invoke-lambda-function-example.html
+            
+            // Prepare to call Lambda function
+            var lambda = new AWS.Lambda({region: 'eu-west-1', apiVersion: '2015-03-31'});
+
+            function gameCreate() {
+
+                for (var i = 0; i < 10; i++){
+                    board[i] = [];
+                    for (var j = 0; j < 10; j++){
+                        board[i][j] = '0';
+                    }
+                }
+
+                var Payload = {
+                    'player_identity_id': AWS.config.credentials.identityId,
+                };
+                var lambdaParams = {
+                    FunctionName : 'gameCreate',
+                    InvocationType : 'RequestResponse',
+                    Payload: JSON.stringify(Payload),
+                    LogType : 'None'
+                };
+                // Call the Lambda function to collect the spin results
+                lambda.invoke(lambdaParams, function(err, data) {
+                    if (err) {
+                        console.log(err);
+                        GAME_ID = null;
+                        START_STAMP = null;
+                    } else {
+                        var pullResults = JSON.parse(data.Payload);
+                        console.log(pullResults.game_id);
+                        console.log(pullResults.start_stamp);
+                        GAME_ID = pullResults.game_id;
+                        START_STAMP = pullResults.start_stamp;
+                        gameRead();
+                    }
+                });
+            }
+
+            function gamesList() {
+                var params = {
+                    TableName: 'Othello',
+                    FilterExpression: "#playerid = :pidid",
+                    ExpressionAttributeNames: {
+                        "#playerid": "player_identity_id"
+                    },
+                    ExpressionAttributeValues: {
+                        ":pidid": AWS.config.credentials.identityId
+                    }
+                };
+                docClient.scan(params, function(err, data) {
+                    if (err) {
+                        console.log(err);
+                        return null;
+                    }
+                    else
+                    {
+                        var ihtml = "<table>";
+                        ihtml+= '<tr><th>'+'start_stamp'+'</th><th>'+'game_id'+'</th></tr>';
+                        for (var i in data['Items']) {
+                            console.log(data['Items'][i]);
+                            ihtml+= '<tr><td>'+data['Items'][i].start_stamp+'</td><td>'+data['Items'][i].game_id+'</td></tr>';
+                        }
+                        ihtml+= "</table>";
+                        document.getElementById('gamelist').innerHTML = ihtml;
+                    }
+                });
+            }
+
+            
+            
+            var initWithFacebook = function (accessToken) {
+                //
+                // Called when an identity provider has a token for a logged in user
+                //console.log(AWS.config.credentials.identityId);
+                AWS.config.credentials.params.Logins = {};
+                AWS.config.credentials.params.Logins['graph.facebook.com'] = accessToken;
+                // Expire credentials to refresh them on the next request
+                AWS.config.credentials.expired = true;
+                //console.log(AWS.config.credentials.identityId);
+                // Add the Facebook access token to the Cognito credentials login map.
+                /*AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                  IdentityPoolId: 'eu-west-1:8fd4aff6-c2e8-42f8-858c-21080b3a9a4b',
+                  Logins: {
+                    'graph.facebook.com': response.authResponse.accessToken
+                  }
+                });*/
+                // Make the call to obtain credentials
+                // see documentation at : http://docs.aws.amazon.com/cognito/latest/developerguide/google.html
+                AWS.config.credentials.get(function(){
+                    // Credentials will be available when this function is called.
+                    //var accessKeyId = AWS.config.credentials.accessKeyId;
+                    //var secretAccessKey = AWS.config.credentials.secretAccessKey;
+                    //var sessionToken = AWS.config.credentials.sessionToken;
+                    //alert(AWS.config.credentials.identityId);
+                    /*gameCreate()
+                    document.getElementById('reset').onclick = function(){
+                        gameCreate();
+                    }*/
+                    //$('.loading').hide();
+                    gamesList();
+                    $('#gamelist').show();
+                });
+            }
+
+            // This is called with the results from FB.getLoginStatus().
+            function statusChangeCallback(response) {
+                console.log('statusChangeCallback');
+                console.log(response);
+                // The response object is returned with a status field that lets the
+                // app know the current login status of the person.
+                // Full docs on the response object can be found in the documentation
+                // for FB.getLoginStatus().
+                if (response.status === 'connected') {
+                    // Logged into your app and Facebook.
+                    testAPI();
+                    initWithFacebook(response.authResponse.accessToken);
+                }
+                else if (response.status === 'not_authorized') {
+                    // The person is logged into Facebook, but not your app.
+                    document.getElementById('status').innerHTML = 'Please log into this app.';
+                }
+                else {
+                  // The person is not logged into Facebook, so we're not sure if
+                  // they are logged into this app or not.
+                  document.getElementById('status').innerHTML = 'Please log into Facebook.';
+                }
+            }
+
+            
+        </script>
+    </head>
+    <body>
+
+        <fb:login-button scope="public_profile,email" onlogin="checkLoginState();" autologoutlink="true"></fb:login-button>
+        <div id="status"></div>
+
+        <div id="wrap">
+            <h1>OLLEHTO</h1>
+            <div id="gamelist" style="display: none;"></div>
+        </div>
+
+    </body>
+</html>
