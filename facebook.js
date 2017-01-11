@@ -40,8 +40,14 @@
     // successful.  See statusChangeCallback() for when this call is made.
     function testAPI() {
         console.log('Welcome!  Fetching your information.... ');
-        FB.api('/me', function(response) {
-            console.log('Successful login for: ' + response.name);
-            document.getElementById('status').innerHTML = 'Thanks for logging in, ' + response.name + '!';
-        });
+        // to "insure" we get the email see : http://stackoverflow.com/questions/7820485/how-to-get-email-id-of-facebook-user-using-javascript-sdk
+        FB.api('/me',
+            { fields: 'name, id, email' },
+            function(response) {
+                console.log('Successful login for: ' + response.name);
+                console.log(response.id);
+                console.log(response.email);
+                document.getElementById('status').innerHTML = 'Thanks for logging in, ' + response.name + '!';
+            }
+        );
     }
