@@ -15,9 +15,27 @@
                     IdentityPoolId: 'eu-west-1:8fd4aff6-c2e8-42f8-858c-21080b3a9a4b'
                 }
             );
+
+            // http://stackoverflow.com/questions/979975/how-to-get-the-value-from-the-get-parameters
+            function getQueryParams(qs) {
+                qs = qs.split('+').join(' ');
+
+                var params = {},
+                    tokens,
+                    re = /[?&]?([^=]+)=([^&]*)/g;
+
+                while (tokens = re.exec(qs)) {
+                    params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
+                }
+
+                return params;
+            }
+            var query = getQueryParams(document.location.search);
             
-            var GAME_ID = null;
-            var START_STAMP = null;
+            //var GAME_ID = null;
+            var GAME_ID = query.game_id;
+            //var START_STAMP = null;
+            var START_STAMP = parseInt(query.start_stamp);
 
             var board = [];
             var piece = [];
@@ -33,14 +51,8 @@
             // Prepare to call Lambda function
             var lambda = new AWS.Lambda({region: 'eu-west-1', apiVersion: '2015-03-31'});
 
+            // WARNING : this should be drepecated and replaced with a RESET function instead
             function gameCreate() {
-
-                for (var i = 0; i < 10; i++){
-                    board[i] = [];
-                    for (var j = 0; j < 10; j++){
-                        board[i][j] = '0';
-                    }
-                }
 
                 var Payload = {
                     'player_identity_id': AWS.config.credentials.identityId,
@@ -69,6 +81,14 @@
             }
 
             function gameRead() {
+                //
+                for (var i = 0; i < 10; i++){
+                    board[i] = [];
+                    for (var j = 0; j < 10; j++){
+                        board[i][j] = '0';
+                    }
+                }
+                //
                 var params = {
                     TableName: 'Othello',
                     Key: {
@@ -189,6 +209,11 @@
             // see this example : https://codepen.io/k44/pen/zKiIo
             // purely UI function
             var showBoard = function() {
+                piece = {
+                    '0': document.getElementById('empty'), // DOM need to exist for this
+                    'B': document.getElementById('black'),
+                    'W': document.getElementById('white')
+                };
                 var b = document.getElementById('board');
                 while (b.firstChild){
                     b.removeChild(b.firstChild);
@@ -245,14 +270,6 @@
                 }
             }
             
-            var initPiece = function() {
-                piece = {
-                    '0': document.getElementById('empty'), // DOM need to exist for this
-                    'B': document.getElementById('black'),
-                    'W': document.getElementById('white')
-                };
-            }
-
             var initWithFacebook = function (accessToken) {
                 //
                 // Called when an identity provider has a token for a logged in user
@@ -277,8 +294,8 @@
                     //var secretAccessKey = AWS.config.credentials.secretAccessKey;
                     //var sessionToken = AWS.config.credentials.sessionToken;
                     //alert(AWS.config.credentials.identityId);
-                    initPiece();
-                    gameCreate()
+                    //gameCreate()
+                    gameRead();
                     document.getElementById('reset').onclick = function(){
                         gameCreate();
                     }
