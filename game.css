@@ -11,8 +11,8 @@
 }
 .cell{
 	position:absolute;
-	width:31px;
-	height:31px;
+	width:37px;
+	height:37px;
 	border:1px solid #000;
 	background-color:#0e0;
 }
@@ -21,28 +21,28 @@
 }
 #message{
 	position:relative;
-	top: 268px;
+	top: 310px;
 }
 #reset{
 	position:relative;
-	top: 258px;
+	top: 320px;
 }
 #empty{}
 #white div{
 	position:absolute;
 	top:1px;
 	left:1px;
-	width:29px;
-	height:29px;
+	width:33px;
+	height:33px;
 	background-color:#fff;
-	border-radius:15px;
+	border-radius:17px;
 }
 #black div{
 	position:absolute;
 	top:1px;
 	left:1px;
-	width:29px;
-	height:29px;
+	width:33px;
+	height:33px;
 	background-color:#000;
-	border-radius:15px;
+	border-radius:17px;
 }

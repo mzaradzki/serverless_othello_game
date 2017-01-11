@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
         <title>OLLEHTO</title>
         <link href="game.css" rel="stylesheet" type="text/css">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
         <script src="https://sdk.amazonaws.com/js/aws-sdk-2.7.20.min.js"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script src="facebook.js"></script>
@@ -51,30 +52,28 @@
             // Prepare to call Lambda function
             var lambda = new AWS.Lambda({region: 'eu-west-1', apiVersion: '2015-03-31'});
 
-            // WARNING : this should be drepecated and replaced with a RESET function instead
-            function gameCreate() {
+            
+            function gameReset() {
 
                 var Payload = {
                     'player_identity_id': AWS.config.credentials.identityId,
+                    'game_id': GAME_ID,
+                    'start_stamp': START_STAMP,
                 };
                 var lambdaParams = {
-                    FunctionName : 'gameCreate',
+                    FunctionName : 'gameReset',
                     InvocationType : 'RequestResponse',
                     Payload: JSON.stringify(Payload),
                     LogType : 'None'
                 };
-                // Call the Lambda function to collect the spin results
+                // Call the Lambda function
                 lambda.invoke(lambdaParams, function(err, data) {
                     if (err) {
                         console.log(err);
-                        GAME_ID = null;
-                        START_STAMP = null;
+                        // WARNING : what should we do here ?
                     } else {
                         var pullResults = JSON.parse(data.Payload);
-                        console.log(pullResults.game_id);
-                        console.log(pullResults.start_stamp);
-                        GAME_ID = pullResults.game_id;
-                        START_STAMP = pullResults.start_stamp;
+                        console.log(pullResults);
                         gameRead();
                     }
                 });
@@ -128,7 +127,7 @@
                     Payload: JSON.stringify(Payload),
                     LogType : 'None'
                 };
-                // Call the Lambda function to collect the spin results
+                // Call the Lambda function
                 lambda.invoke(lambdaParams, function(err, data) {
                     if (err) {
                         prompt(err);
@@ -221,8 +220,8 @@
                 for (var row=1; row<=8; row++){
                     for (var col=1; col<=8; col++){
                         var cell = piece[board[row][col]].cloneNode(true);
-                        cell.style.top = ((row - 1) * 32) + "px";
-                        cell.style.left = ((col - 1) * 32) + "px";
+                        cell.style.top = ((row - 1) * 36) + "px";
+                        cell.style.left = ((col - 1) * 36) + "px";
                         b.appendChild(cell);
                         
                         if (board[row][col] == '0'){
@@ -294,10 +293,9 @@
                     //var secretAccessKey = AWS.config.credentials.secretAccessKey;
                     //var sessionToken = AWS.config.credentials.sessionToken;
                     //alert(AWS.config.credentials.identityId);
-                    //gameCreate()
                     gameRead();
                     document.getElementById('reset').onclick = function(){
-                        gameCreate();
+                        gameReset();
                     }
                     //$('.loading').hide();
                     $('#wrap').show();
@@ -330,22 +328,27 @@
         </script>
     </head>
     <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-10 col-md-offset-1">
 
-        <fb:login-button scope="public_profile,email" onlogin="checkLoginState();" autologoutlink="true"></fb:login-button>
-        <div id="status"></div>
+                    <fb:login-button scope="public_profile,email" onlogin="checkLoginState();" autologoutlink="true"></fb:login-button>
+                    <div id="status"></div>
 
-        <div id="template">
-            <div id="empty" class="cell"><div></div></div>
-            <div id="black" class="cell"><div></div></div>
-            <div id="white" class="cell"><div></div></div>
+                    <div id="template">
+                        <div id="empty" class="cell"><div></div></div>
+                        <div id="black" class="cell"><div></div></div>
+                        <div id="white" class="cell"><div></div></div>
+                    </div>
+
+                    <div id="wrap" style="display: none;">
+                        <h1>OLLEHTO</h1>
+                        <div id="board"></div>
+                        <p id="message"></p>
+                        <input class="btn btn-danger" type="button" id="reset" value="reset">
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div id="wrap" style="display: none;">
-            <h1>OLLEHTO</h1>
-            <div id="board"></div>
-            <p id="message"></p>
-            <input type="button" id="reset" value="reset">
-        </div>
-
     </body>
 </html>
