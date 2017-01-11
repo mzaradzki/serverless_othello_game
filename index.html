@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
         <title>OLLEHTO</title>
         <link href="game.css" rel="stylesheet" type="text/css">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
         <script src="https://sdk.amazonaws.com/js/aws-sdk-2.7.20.min.js"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script src="facebook.js"></script>
@@ -77,14 +78,15 @@
                     }
                     else
                     {
-                        var ihtml = "<table>";
-                        ihtml+= '<tr><th>'+'start_stamp'+'</th><th>'+'game_id'+'</th><th>'+'game'+'</th></tr>';
+                        var ihtml = "<table class='table'>";
+                        ihtml+= '<tr><th>'+'date'+'</th><th>'+'turn'+'</th><th>'+'game'+'</th></tr>';
                         for (var i in data['Items']) {
                             console.log(data['Items'][i]);
-                            gameurl = 'game.html?'
-                            gameurl+= 'game_id=' + encodeURIComponent(data['Items'][i].game_id)
+                            var gamedate = new Date(data['Items'][i].start_stamp);
+                            var gameurl = 'game.html?';
+                            gameurl+= 'game_id=' + encodeURIComponent(data['Items'][i].game_id);
                             gameurl+= '&start_stamp=' + encodeURIComponent(data['Items'][i].start_stamp);
-                            ihtml+= '<tr><td>'+data['Items'][i].start_stamp+'</td><td>'+data['Items'][i].game_id+'</td><td><a href="'+gameurl+'">game</a></td></tr>';
+                            ihtml+= '<tr><td>'+gamedate.toUTCString()+'</td><td>'+data['Items'][i].turn+'</td><td><a href="'+gameurl+'">open</a></td></tr>';
                         }
                         ihtml+= "</table>";
                         document.getElementById('gamelist').innerHTML = ihtml;
@@ -155,15 +157,21 @@
         </script>
     </head>
     <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3">
 
-        <fb:login-button scope="public_profile,email" onlogin="checkLoginState();" autologoutlink="true"></fb:login-button>
-        <div id="status"></div>
+                    <fb:login-button scope="public_profile,email" onlogin="checkLoginState();" autologoutlink="true"></fb:login-button>
+                    <div id="status"></div>
 
-        <div id="wrap">
-            <h1>OLLEHTO</h1>
-            <div id="gamelist" style="display: none;"></div>
-            <input type="button" id="newgame" value="new game">
+                    <div>
+                        <h1>OLLEHTO</h1>
+                        <div id="gamelist" style="display: none;"></div>
+                        <input class="btn btn-success" type="button" id="newgame" value="new game">
+                    </div>
+
+                </div>
+            </div>
         </div>
-
     </body>
 </html>
