@@ -78,10 +78,13 @@
                     else
                     {
                         var ihtml = "<table>";
-                        ihtml+= '<tr><th>'+'start_stamp'+'</th><th>'+'game_id'+'</th></tr>';
+                        ihtml+= '<tr><th>'+'start_stamp'+'</th><th>'+'game_id'+'</th><th>'+'game'+'</th></tr>';
                         for (var i in data['Items']) {
                             console.log(data['Items'][i]);
-                            ihtml+= '<tr><td>'+data['Items'][i].start_stamp+'</td><td>'+data['Items'][i].game_id+'</td></tr>';
+                            gameurl = 'game.html?'
+                            gameurl+= 'game_id=' + encodeURIComponent(data['Items'][i].game_id)
+                            gameurl+= '&start_stamp=' + encodeURIComponent(data['Items'][i].start_stamp);
+                            ihtml+= '<tr><td>'+data['Items'][i].start_stamp+'</td><td>'+data['Items'][i].game_id+'</td><td><a href="'+gameurl+'">game</a></td></tr>';
                         }
                         ihtml+= "</table>";
                         document.getElementById('gamelist').innerHTML = ihtml;
