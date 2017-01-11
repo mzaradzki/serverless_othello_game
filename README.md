@@ -37,5 +37,4 @@ Misc.:
 * When logging-off needs to delete credentials and to reset UI
 * A user should not be able to create a new fresh game (unknown game partner) if he already has one in the DB
 * A user should not be able to have more than 1 game open against a given game partner
-* Display a listing of open games for a given user
-* Display a listing of closed games for a given user
+* Display a listing of open/closed games for a given user - DONE
