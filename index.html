@@ -121,9 +121,9 @@
                     document.getElementById('newgame').onclick = function(){
                         gameCreate();
                     }
-                    //$('.loading').hide();
+                    $('#logotron').hide();
                     gamesList();
-                    $('#gamelist').show();
+                    $('#main').show();
                 });
             }
 
@@ -143,11 +143,15 @@
                 else if (response.status === 'not_authorized') {
                     // The person is logged into Facebook, but not your app.
                     document.getElementById('status').innerHTML = 'Please log into this app.';
+                    $('#logotron').show();
+                    $('#main').hide();
                 }
                 else {
-                  // The person is not logged into Facebook, so we're not sure if
-                  // they are logged into this app or not.
-                  document.getElementById('status').innerHTML = 'Please log into Facebook.';
+                    // The person is not logged into Facebook, so we're not sure if
+                    // they are logged into this app or not.
+                    document.getElementById('status').innerHTML = 'Please log into Facebook.';
+                    $('#logotron').show();
+                    $('#main').hide();
                 }
             }
 
@@ -159,13 +163,22 @@
             <div class="row">
                 <div class="col-md-6 col-md-offset-3">
 
-                    <fb:login-button scope="public_profile,email" onlogin="checkLoginState();" autologoutlink="true"></fb:login-button>
-                    <div id="status"></div>
+                    <div id="logotron" class="jumbotron">
+                        <h1>Hello Ollehto!</h1>
+                        <!--<p>...</p>
+                        <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a></p>-->
+                        <fb:login-button scope="public_profile,email" onlogin="checkLoginState();" autologoutlink="true"></fb:login-button>
+                    </div>
 
-                    <div>
-                        <h1>OLLEHTO</h1>
-                        <div id="gamelist" style="display: none;"></div>
-                        <input class="btn btn-success" type="button" id="newgame" value="new game">
+                    <div id="main" style="display: none;">
+                        <fb:login-button scope="public_profile,email" onlogin="checkLoginState();" autologoutlink="true"></fb:login-button>
+                        <div id="status"></div>
+
+                        <div>
+                            <h1>OLLEHTO</h1>
+                            <div id="gamelist" ></div>
+                            <input class="btn btn-success" type="button" id="newgame" value="new game">
+                        </div>
                     </div>
 
                 </div>
