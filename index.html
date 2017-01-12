@@ -13,6 +13,42 @@
         <script src="facebook.js"></script>
         <script type="text/javascript">
 
+            function storeFriendsInCognito() {
+                FB.api(
+                    "/me/friends",
+                    function (response) {
+                        if (response && !response.error) {
+                            console.log('Total friends count : '+response.summary.total_count);
+                            console.log('Friends who use the app : '+response.data.length);
+                            cognitoSyncManager.openOrCreateDataset('myFriends', function(err, dataset) {
+                                console.log('done');
+                                for (var i in response.data) {
+                                    dataset.put(response.data[i].id, response.data[i].name, function(err, record) {
+                                        console.log(record);
+                                    });
+                                }
+                                dataset.synchronize(congnitoSyncPolicy);
+                            });
+
+                        }
+                    }
+                );
+            }
+            function readFriendsInCognito() {
+                cognitoSyncManager.openOrCreateDataset('myFriends',
+                    function(err, dataset) {
+                        console.log('done');
+                        dataset.getAllRecords(
+                            function(err, records) {
+                                for (var i in records) {
+                                    console.log(records[i]);
+                                }
+                            }
+                        );
+                    }
+                );
+            }
+
             function gameCreate() {
 
                 var Payload = {
