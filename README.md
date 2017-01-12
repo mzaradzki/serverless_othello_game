@@ -5,7 +5,7 @@ Serverless Othello board game using AWS
 We want to implement an HTML+JS version of thr Othello board game where user actions are process through AWS Lambda :
 * AWS Lambda will receive user action and update the state of the game - DONE
 * AWS DynamoDB will store the state of the game - DONE
-* AWS DynamoDB will store the list of players - TO DO
+* AWS DynamoDB will store the list of players - DONE
 * AWS Cognito Dataset to store Facebook friends - DONE
 * AWS Cognito will handle user authentification - DONE
 * AWS CognitoSyncManager to synchronize across dvices - OPTIONAL TO DO

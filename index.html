@@ -13,6 +13,35 @@
         <script src="facebook.js"></script>
         <script type="text/javascript">
 
+            function storeMeInDynamo() {
+                // to "insure" we get the email see : http://stackoverflow.com/questions/7820485/how-to-get-email-id-of-facebook-user-using-javascript-sdk
+                FB.api('/me',
+                    { fields: 'name, id, email' },
+                    function(response) {
+                        console.log(response.id);
+                        console.log(response.email);
+                        var params = {
+                            TableName :'OthelloPlayers',
+                            Item:{
+                                'facebook_id': response.id,
+                                //'creation_stamp': start_stamp,
+                                'player_identity_id': AWS.config.credentials.identityId,
+                                //'email': response.email,
+                                'name': response.name
+                            }
+                        };
+                        docClient.put(params, function(err, data) {
+                            if (err) {
+                                console.log("Unable to add item: " + "\n" + JSON.stringify(err, undefined, 2));
+                            } else {
+                                console.log(data);
+                                console.log("PutItem succeeded: " + "\n" + JSON.stringify(data, undefined, 2));
+                            }
+                        });
+                    }
+                );
+            }
+
             function storeFriendsInCognito() {
                 FB.api(
                     "/me/friends",
