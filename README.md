@@ -50,9 +50,9 @@ python -m SimpleHTTPServer
 
 
 **Misc.**
-* When creating a game needs to pass identityId to Lambda function to record the 2 game owners
+* When creating a game needs to pass identityId to Lambda function to record the 2 game owners - DONE
 * When loading a game needs to pass identityId to Lambda to check against game owners
-* When logging-off needs to delete credentials and to reset UI
+* When logging-off needs to delete credentials and to reset UI - DONE (via url redirect) BUT CAN DO CLEANER
 * A user should not be able to create a new fresh game (unknown game partner) if he already has one in the DB
 * A user should not be able to have more than 1 game open against a given game partner
 * Display a listing of open/closed games for a given user - DONE
