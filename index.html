@@ -3,12 +3,13 @@
     <head>
         <meta charset="UTF-8">
         <title>OLLEHTO</title>
-        <link href="game.css" rel="stylesheet" type="text/css">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
         <script src="https://sdk.amazonaws.com/js/aws-sdk-2.7.20.min.js"></script>
         <!-- see documentation : https://github.com/aws/amazon-cognito-js -->
         <script src="amazon-cognito-js/dist/amazon-cognito.min.js"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <link href="game.css" rel="stylesheet" type="text/css">
         <script src="amazon.js"></script>
         <script src="facebook.js"></script>
         <script type="text/javascript">
@@ -61,8 +62,8 @@
                                 }
                                 dataset.synchronize(congnitoSyncPolicy);
                             });
-
                         }
+                        readFriendsInCognito();
                     }
                 );
             }
@@ -70,19 +71,21 @@
                 cognitoSyncManager.openOrCreateDataset('myFriends',
                     function(err, dataset) {
                         console.log('done');
+                        $("#friendlist ul li").remove(); // clean the list before appending
                         dataset.getAllRecords(
                             function(err, records) {
                                 for (var i in records) {
                                     console.log(records[i]);
+                                    $("#friendlist ul").append('<li><a href="#">'+records[i].value+'</a></li>');
                                 }
                             }
                         );
+                        $("#friendlist").show();
                     }
                 );
             }
 
             function gameCreate() {
-
                 var Payload = {
                     'player_identity_id': AWS.config.credentials.identityId,
                 };
@@ -178,6 +181,8 @@
                     }
                     $('#logotron').hide();
                     gamesList();
+                    storeFriendsInCognito();
+                    readFriendsInCognito();
                     $('#main').show();
                 });
             }
@@ -231,8 +236,34 @@
 
                         <div>
                             <h1>OLLEHTO</h1>
-                            <div id="gamelist" ></div>
-                            <input class="btn btn-success" type="button" id="newgame" value="new game">
+                            <div id="gamelist"></div>
+                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModal">New Game</button>
+                        </div>
+                    </div>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <!--<div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                                </div>-->
+                                <div class="modal-body">
+                                    <div id="friendlist" class="dropdown" style="display: none;">
+                                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        Select friend
+                                        <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                    <button id="newgame" type="button" class="btn btn-success">Create</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
