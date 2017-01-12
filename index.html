@@ -20,22 +20,25 @@
                     function(response) {
                         console.log(response.id);
                         console.log(response.email);
-                        var params = {
-                            TableName :'OthelloPlayers',
-                            Item:{
-                                'facebook_id': response.id,
-                                //'creation_stamp': start_stamp,
-                                'player_identity_id': AWS.config.credentials.identityId,
-                                //'email': response.email,
-                                'name': response.name
-                            }
+                        var Payload = {
+                            'facebook_id': response.id,
+                            'facebook_name': response.name,
+                            //'email': response.email,
+                            'player_identity_id': AWS.config.credentials.identityId
                         };
-                        docClient.put(params, function(err, data) {
+                        var lambdaParams = {
+                            FunctionName : 'playerStore',
+                            InvocationType : 'RequestResponse',
+                            Payload: JSON.stringify(Payload),
+                            LogType : 'None'
+                        };
+                        // Call the Lambda function
+                        lambda.invoke(lambdaParams, function(err, data) {
                             if (err) {
-                                console.log("Unable to add item: " + "\n" + JSON.stringify(err, undefined, 2));
+                                console.log(err);
                             } else {
-                                console.log(data);
-                                console.log("PutItem succeeded: " + "\n" + JSON.stringify(data, undefined, 2));
+                                var pullResults = JSON.parse(data.Payload);
+                                console.log(pullResults);
                             }
                         });
                     }
