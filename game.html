@@ -97,7 +97,7 @@
                 });
             }
             
-            function boardUpdate(game_id, start_stamp, player, row, column) {
+            function gameUpdate(game_id, start_stamp, player, row, column) {
                 var Payload = {
                     'game_id': game_id,
                     'start_stamp': start_stamp,
@@ -107,7 +107,7 @@
                 };
                 console.log(JSON.stringify(Payload));
                 var lambdaParams = {
-                    FunctionName : 'boardUpdate',
+                    FunctionName : 'gameUpdate',
                     InvocationType : 'RequestResponse',
                     Payload: JSON.stringify(Payload),
                     LogType : 'None'
@@ -157,7 +157,7 @@
                 if ((ret>0) && (flip)) {
                     console.log(x);
                     console.log(y);
-                    boardUpdate(GAME_ID, START_STAMP, turn, x, y);
+                    gameUpdate(GAME_ID, START_STAMP, turn, x, y);
                 }
                 return ret;
             }
