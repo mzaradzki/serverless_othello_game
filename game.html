@@ -6,17 +6,13 @@
         <link href="game.css" rel="stylesheet" type="text/css">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
         <script src="https://sdk.amazonaws.com/js/aws-sdk-2.7.20.min.js"></script>
+        <!-- see documentation : https://github.com/aws/amazon-cognito-js -->
+        <script src="amazon-cognito-js/dist/amazon-cognito.min.js"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script src="amazon.js"></script>
         <script src="facebook.js"></script>
         <script type="text/javascript">
-            // Configure AWS SDK for JavaScript
-            AWS.config.update({region: 'eu-west-1'});
-            AWS.config.credentials = new AWS.CognitoIdentityCredentials(
-                {
-                    IdentityPoolId: 'eu-west-1:8fd4aff6-c2e8-42f8-858c-21080b3a9a4b'
-                }
-            );
-
+            
             // http://stackoverflow.com/questions/979975/how-to-get-the-value-from-the-get-parameters
             function getQueryParams(qs) {
                 qs = qs.split('+').join(' ');
@@ -42,17 +38,6 @@
             var piece = [];
             var turn;
 
-            // to create, read, update a DB record :
-            // http://docs.aws.amazon.com/amazondynamodb/latest/gettingstartedguide/GettingStarted.Js.03.html#GettingStarted.Js.03.01
-            var docClient = new AWS.DynamoDB.DocumentClient();
-
-            // Lambda calls from Javascript documented here :
-            // http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/browser-invoke-lambda-function-example.html
-            
-            // Prepare to call Lambda function
-            var lambda = new AWS.Lambda({region: 'eu-west-1', apiVersion: '2015-03-31'});
-
-            
             function gameReset() {
 
                 var Payload = {
