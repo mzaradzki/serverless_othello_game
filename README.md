@@ -6,7 +6,7 @@ We want to implement an HTML+JS version of thr Othello board game where user act
 * AWS Lambda will receive user action and update the state of the game - DONE
 * AWS DynamoDB will store the state of the game - DONE
 * AWS DynamoDB will store the list of players - TO DO
-* AWS Cognito Dataset to store Facebook friends - TO DO
+* AWS Cognito Dataset to store Facebook friends - DONE
 * AWS Cognito will handle user authentification - DONE
 * AWS CognitoSyncManager to synchronize across dvices - OPTIONAL TO DO
 * AWS SNS to notify users when its their turn - TO DO
