@@ -6,6 +6,7 @@ We want to implement an HTML+JS version of thr Othello board game where user act
 * AWS Lambda will receive user action and update the state of the game - DONE
 * AWS DynamoDB will store the state of the game - DONE
 * AWS DynamoDB will store the list of players - TO DO
+* AWS Cognito Dataset to store Facebook friends - TO DO
 * AWS Cognito will handle user authentification - DONE
 * AWS CognitoSyncManager to synchronize across dvices - OPTIONAL TO DO
 * AWS SNS to notify users when its their turn - TO DO
@@ -26,12 +27,17 @@ To save all the AWS configurations one can use a template file such as ChessGame
 
 
 **NOTE**
+To use Cognito Sync Manager in the browser we need to host a copy of this package :
+https://github.com/aws/amazon-cognito-js
+
+
+**NOTE**
 When testing it is best to emulate a server rather than directly opening the html files in the browser.
 For example launch the site from the console with :
 python -m SimpleHTTPServer
 
 
-Misc.:
+**Misc.**
 * When creating a game needs to pass identityId to Lambda function to record the 2 game owners
 * When loading a game needs to pass identityId to Lambda to check against game owners
 * When logging-off needs to delete credentials and to reset UI
