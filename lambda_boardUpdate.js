@@ -18,10 +18,10 @@ exports.handler = (event, context, callback) => {
     
     function updateItem(game_id, start_stamp, new_turn, new_board) {
         var params = {
-            TableName: 'Othello',
+            TableName: 'OthelloGames',
             Key: {
                 'game_id': game_id,
-                'start_stamp': start_stamp
+                //'start_stamp': start_stamp
             },
             UpdateExpression: "set turn = :t, board = :b",
             ExpressionAttributeValues: {
@@ -43,10 +43,10 @@ exports.handler = (event, context, callback) => {
     }
     
     var params = {
-        TableName: 'Othello',
+        TableName: 'OthelloGames',
         Key: {
             'game_id': event.game_id,
-            'start_stamp': event.start_stamp
+            //'start_stamp': event.start_stamp
         }
     };
     docClient.get(params, function(err, data) {

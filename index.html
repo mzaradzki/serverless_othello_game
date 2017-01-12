@@ -111,10 +111,11 @@
 
             function gamesList() {
                 var params = {
-                    TableName: 'Othello',
-                    FilterExpression: "#playerid = :pidid",
+                    TableName: 'OthelloGames',
+                    FilterExpression: "#blackplayerid = :pidid or #whiteplayerid = :pidid",
                     ExpressionAttributeNames: {
-                        "#playerid": "player_identity_id"
+                        "#blackplayerid": "black_player_identity_id",
+                        "#whiteplayerid": "white_player_identity_id"
                     },
                     ExpressionAttributeValues: {
                         ":pidid": AWS.config.credentials.identityId

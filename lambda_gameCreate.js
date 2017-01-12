@@ -37,14 +37,25 @@ exports.handler = (event, context, callback) => {
                     '0000000000',
                     '0000000000']; //padding
     
+    var black_id, white_id;
+    if (Math.random()>0.5) {
+        black_id = event.player_identity_id;
+        white_id = "guest"; 
+    }
+    else {
+        black_id = "guest";
+        white_id = event.player_identity_id;
+    }
+    
     var params = {
-        TableName :'Othello',
+        TableName :'OthelloGames',
         Item:{
             'game_id': game_id,
             'start_stamp': start_stamp,
             'board': board,
             'turn': 'B',
-            'player_identity_id': event.player_identity_id
+            'black_player_identity_id': black_id,
+            'white_player_identity_id': white_id
         }
     };
     docClient.put(params, function(err, data) {

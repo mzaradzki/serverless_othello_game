@@ -74,10 +74,10 @@
                 }
                 //
                 var params = {
-                    TableName: 'Othello',
+                    TableName: 'OthelloGames',
                     Key: {
                         'game_id': GAME_ID,
-                        'start_stamp': START_STAMP
+                        //'start_stamp': START_STAMP
                     }
                 };
                 docClient.get(params, function(err, data) {
