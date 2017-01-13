@@ -37,7 +37,29 @@
 
             var board = [];
             var piece = [];
-            var turn;
+            var turn = null;
+            var black_player_identity_id = null;
+            var white_player_identity_id = null;
+
+            function isBlack() {
+                return (black_player_identity_id == AWS.config.credentials.identityId);
+            }
+
+            function isWhite() {
+                return (white_player_identity_id == AWS.config.credentials.identityId);
+            }
+
+            function canPlay() {
+                if (turn == 'B') {
+                    return isBlack();
+                }
+                else if (turn == 'W') {
+                    return isWhite();
+                }
+                else {
+                    return false;
+                }
+            }
 
             function gameReset() {
 
@@ -87,6 +109,8 @@
                     } else {
                         console.log("GetItem succeeded: " + "\n" + JSON.stringify(data, undefined, 2));
                         //
+                        black_player_identity_id = data.Item.black_player_identity_id;
+                        white_player_identity_id = data.Item.white_player_identity_id;
                         for(var i=0; i<10; i++){
                             for(var j = 0; j<10; j++){
                                 board[i][j] = data.Item.board[i][j];
@@ -141,7 +165,7 @@
                         }
                         if (n > 0 && board[nx][ny] == turn) {
                             ret += n;
-                            if (flip) { // This logic should be part of the Lambda too
+                            if (flip && canPlay()) { // This logic should be part of the Lambda too
                                 nx = x + dx;
                                 ny = y + dy;
                                 while (board[nx][ny] == ((turn == 'W') ? 'B' : 'W')) {
@@ -155,7 +179,7 @@
                     }
                 }
                 // Lambda
-                if ((ret>0) && (flip)) {
+                if ((ret>0) && flip && canPlay()) {
                     console.log(x);
                     console.log(y);
                     gameUpdate(GAME_ID, START_STAMP, turn, x, y);
@@ -200,17 +224,17 @@
                     'W': document.getElementById('white')
                 };
                 var b = document.getElementById('board');
-                while (b.firstChild){
+                while (b.firstChild) {
                     b.removeChild(b.firstChild);
                 }
-                for (var row=1; row<=8; row++){
-                    for (var col=1; col<=8; col++){
+                for (var row=1; row<=8; row++) {
+                    for (var col=1; col<=8; col++) {
                         var cell = piece[board[row][col]].cloneNode(true);
                         cell.style.top = ((row - 1) * 36) + "px";
                         cell.style.left = ((col - 1) * 36) + "px";
                         b.appendChild(cell);
                         
-                        if (board[row][col] == '0'){
+                        if ((board[row][col] == '0') && canPlay()) {
                             (function(){
                                 var _row = row;
                                 var _col = col;
