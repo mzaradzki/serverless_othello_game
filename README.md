@@ -64,5 +64,8 @@ python -m SimpleHTTPServer
 * A user should not be able to create a new fresh game (unknown game partner) if he already has one in the DB
 * A user should not be able to have more than 1 game open against a given game partner
 * Display a listing of open/closed games for a given user - DONE
+* When the opponent move a piece, would be nice to get a clear signal (image or sound) that it is our turn to play
+* When the opponent move a piece, would be nice to see the piece that was moved with an highlight
+* Would be nice to see timers of the time taken by each player... unless they play in several sessions
 
 
