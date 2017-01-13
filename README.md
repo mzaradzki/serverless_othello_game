@@ -8,7 +8,7 @@ We want to implement an HTML+JS version of thr Othello board game where user act
 * AWS DynamoDB will store the list of players - DONE
 * AWS Cognito Dataset to store Facebook friends - DONE
 * AWS Cognito will handle user authentification - DONE
-* AWS CognitoSyncManager to synchronize across devices - OPTIONAL TO DO
+* AWS CognitoSyncManager to synchronize across devices - DONE (to store Facebook friend list)
 * AWS S3 will store the website files - OPTIONAL TO DO (can store on Git Pages !)
 * AWS CloudFormation configuration template - OPTIONAL TO DO
 
