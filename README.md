@@ -13,7 +13,12 @@ We want to implement an HTML+JS version of thr Othello board game where user act
 * AWS CloudFormation configuration template - OPTIONAL TO DO
 
 
-**NOTE** To notify users when it's their turn to play the plan was to use AWS SNS push notification, however this is only available for Android and iOS devices, so for the moment the game will rely on regular pull calls insteads of pushes.
+**IMPROVEMENTS TO DO** 
+a) The game already works however the many calls to the DB make the interface slow when opening/refreshing a page. This would be more transparent to the user if we relied on Cognito Dataset for all the data (only FB friends at present) so that on any device at any time most of the data is in sync. The DB call would only update the local copies of the Datasets to synchronize them regularly. b) When moving from the index to the game page it seems the FB login page slows the transition, maybe there is a way to keep the FB login info across pages ?
+
+
+**NOTE**
+To notify users when it's their turn to play the plan was to use AWS SNS push notification, however this is only available for Android and iOS devices, so for the moment the game will rely on regular pull calls insteads of pushes.
 
 
 **AWS IAM Roles**
@@ -67,5 +72,6 @@ python -m SimpleHTTPServer
 * When the opponent move a piece, would be nice to get a clear signal (image or sound) that it is our turn to play
 * When the opponent move a piece, would be nice to see the piece that was moved with an highlight
 * Would be nice to see timers of the time taken by each player... unless they play in several sessions
+* There is a small UI bug when a user plays his turn but his move is sent to the db during a game state pull query
 
 
