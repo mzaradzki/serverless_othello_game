@@ -9,9 +9,11 @@ We want to implement an HTML+JS version of thr Othello board game where user act
 * AWS Cognito Dataset to store Facebook friends - DONE
 * AWS Cognito will handle user authentification - DONE
 * AWS CognitoSyncManager to synchronize across devices - OPTIONAL TO DO
-* AWS SNS to notify users when its their turn - TO DO
 * AWS S3 will store the website files - OPTIONAL TO DO (can store on Git Pages !)
 * AWS CloudFormation configuration template - OPTIONAL TO DO
+
+
+**NOTE** To notify users when it's their turn to play the plan was to use AWS SNS push notification, however this is only available for Android and iOS devices, so for the moment the game will rely on regular pull calls insteads of pushes.
 
 
 **AWS IAM Roles**
