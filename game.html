@@ -304,6 +304,8 @@
                     //var sessionToken = AWS.config.credentials.sessionToken;
                     //alert(AWS.config.credentials.identityId);
                     gameRead();
+                    /* Get the data every 3 seconds */
+                    setInterval(gameRead, 3000);
                     document.getElementById('reset').onclick = function(){
                         gameReset();
                     }
