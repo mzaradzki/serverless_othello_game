@@ -141,7 +141,7 @@
                         gamesDico[piececolour] = data['Items'];
                         //
                         var ihtml = "<table class='table'>";
-                        ihtml+= '<tr><th>'+'date'+'</th><th>'+'turn'+'</th><th>'+'game'+'</th></tr>';
+                        ihtml+= '<tr><th>'+'date'+'</th><th>'+'my colour'+'</th><th>'+'turn'+'</th><th>'+'game'+'</th></tr>';
                         var items = [];
                         if (gamesDico.hasOwnProperty('black')) {
                             items = items.concat(gamesDico['black']);
@@ -158,7 +158,14 @@
                             var gameurl = 'game.html?';
                             gameurl+= 'game_id=' + encodeURIComponent(item.game_id);
                             gameurl+= '&start_stamp=' + encodeURIComponent(item.start_stamp);
-                            ihtml+= '<tr><td>'+gamedate.toUTCString()+'</td><td>'+item.turn+'</td><td><a href="'+gameurl+'">open</a></td></tr>';
+                            var mycolour = (item.white_player_identity_id==AWS.config.credentials.identityId ? 'White' : 'Black');
+                            var ihtmlrow = '<tr>';
+                            ihtmlrow+= '<td>'+gamedate.toUTCString()+'</td>';
+                            ihtmlrow+= '<td>'+mycolour+'</td>';
+                            ihtmlrow+= '<td>'+item.turn+'</td>';
+                            ihtmlrow+= '<td><a href="'+gameurl+'">open</a></td>';
+                            ihtmlrow+= '</tr>';
+                            ihtml+= ihtmlrow;
                         }
                         ihtml+= "</table>";
                         document.getElementById('gamelist').innerHTML = ihtml;
