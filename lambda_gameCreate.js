@@ -3,6 +3,18 @@ var AWS = require('aws-sdk');
 
 exports.handler = (event, context, callback) => {
     
+    try {
+        console.log(context.identity.cognitoIdentityId);
+    }
+    catch (err) {
+        console.log('no context cognitoIdentityId');
+    }
+    try {
+        console.log(context.identity.cognitoIdentityPoolId);
+    }
+    catch (err) {
+        console.log('no context cognitoIdentityPoolId');
+    }
     console.log(event.player_identity_id);
     console.log(event.guest_facebook_id);
     

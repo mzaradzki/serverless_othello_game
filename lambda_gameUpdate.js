@@ -2,7 +2,19 @@ console.log('Loading event');
 var AWS = require('aws-sdk');
 
 exports.handler = (event, context, callback) => {
-    // TODO implement
+    
+    try {
+        console.log(context.identity.cognitoIdentityId);
+    }
+    catch (err) {
+        console.log('no context cognitoIdentityId');
+    }
+    try {
+        console.log(context.identity.cognitoIdentityPoolId);
+    }
+    catch (err) {
+        console.log('no context cognitoIdentityPoolId');
+    }
     console.log(event.game_id);
     console.log(event.start_stamp);
     console.log(event.player); // use the player to check consistency
