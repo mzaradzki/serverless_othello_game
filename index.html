@@ -78,8 +78,13 @@
                             function(err, records) {
                                 for (var i in records) {
                                     console.log(records[i]);
-                                    GUEST_FACEBOOK_ID = records[i].key;
-                                    $("#friendlist ul").append('<li><a href="#">'+records[i].value+'</a></li>');
+                                    $("#friendlist ul").append('<li><a id="'+records[i].key+'" href="#">'+records[i].value+'</a></li>');
+                                    $('#'+records[i].key).click(function(e) {
+                                        e.preventDefault();// prevent the default anchor functionality
+                                        GUEST_FACEBOOK_ID = e.target.id;
+                                        //console.log(e.target.id);
+                                        console.log('selected facebook_id : ' + e.target.id);
+                                    });
                                 }
                             }
                         );
